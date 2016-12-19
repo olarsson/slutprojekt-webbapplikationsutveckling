@@ -30,12 +30,17 @@ function send_req(container, mode, req_url, req_type) {
           container.find('.ajax_loading').first().css('display', (jqXHR.responseText ? 'none' : 'block'));
           html += `<div class="row">`;
           
+          var pdate;
+                        
           for (var i in data.items) {
+            
+            pdate = ((pdate = data.items[i].volumeInfo.publishedDate) ? pdate : 'Okänt');
+            
             html += `<div class="col-md-2 col-sm-4 col-xs-12"><div class="img_hover">`;
-            if (data.items[i].volumeInfo.hasOwnProperty("imageLinks")) { html += `<img src="${data.items[i].volumeInfo.imageLinks.thumbnail}">`; } else { html += `<img src="no image">`; }
+            html += (data.items[i].volumeInfo.hasOwnProperty("imageLinks") ? `<img src="${data.items[i].volumeInfo.imageLinks.thumbnail}">` : `<img src="img/thumbnail.png">`);
             html += `<div class="titledata">${data.items[i].volumeInfo.title}</div>`;            
-            html += `</div><span class="date text-muted">Published ${data.items[i].volumeInfo.publishedDate}</span></div>`;
-          }
+            html += `</div><span class="date text-muted">${pdate}</span></div>`;
+          }                        
           
           html += `</div>`;
           container.find('.ajax_content').first().html(html);          
