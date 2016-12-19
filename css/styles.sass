@@ -1,0 +1,102 @@
+$fontsize: 1em
+$bcolor: #fff
+$fcolor: #000
+$linkcolor: lightblue
+
+html
+  height: 100%
+  font-size: $fontsize
+
+body
+  background-color: #fff
+  color: $fcolor
+  height: 100%
+  line-height: 1.2em
+
+img
+  display: block
+  max-width: 100%
+  max-height: 100%
+  width: auto
+
+pre
+  white-space: pre-wrap
+  white-space: -moz-pre-wrap
+  white-space: -pre-wrap
+  white-space: -o-pre-wrap
+  word-wrap: break-word
+
+a
+  color: $linkcolor
+  text-decoration: none
+  border-bottom: 1px solid $linkcolor
+
+a:hover
+  color: #fff
+  text-decoration: none
+  border-bottom: 2px solid #fff
+
+.wrapper
+  position: relative
+  max-width: 940px
+  min-height: 100%
+  margin: 100px auto
+  padding: 15px
+
+.ajax_loading
+  position: absolute
+  display: none
+  background: rgba(255,255,255,0.85)
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  z-index: 1
+
+.ajax_loading img
+  margin: 0 auto
+  position: relative
+  top: 50%
+  transform: translateY(-50%)  
+  
+.ajax_container
+  min-height: 60px
+  margin-top: 5px
+  border: 1px solid #dadada
+  border-radius: 5px
+  padding: 10px
+  position: relative
+  
+/**************************/
+
+.date
+  font-size: 0.8em
+  
+.img_hover 
+  position: relative
+  
+.img_hover:hover .titledata
+  display: block
+  opacity: 1
+  
+.titledata
+  display: none
+  position: absolute
+  font-weight: bold
+  font-size: 0.8em
+  padding: 10px
+  width: 100%
+  top: 0px
+  left: 0px
+  min-height: 100px
+  background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%)
+  background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%)
+  background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%)
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=0 )
+  opacity: 0.5
+  transition: opacity .5s ease-in-out
+  -moz-transition: opacity .5s ease-in-out
+  -webkit-transition: opacity .5s ease-in-out
+  
+
+/**************************/
