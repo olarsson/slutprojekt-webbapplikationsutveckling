@@ -6,7 +6,7 @@ var markers = [];
 
 //var data_domain;
 //var data_ip;
-var all_html = '';
+//var all_html = '';
 var log = [];
 var maxtries = 0;
 const maxtries_val = 2; //Maximum number of retries for getting the IPV4 address
@@ -73,7 +73,12 @@ function show_log() {
   $('.ajax_log').html('<div class="row">' + str + '</div>');
 }
 
-function update_html(data, error) {  
+function hide_loader() {
+  $('.ajax_loading').css('display', 'none');
+}
+
+function update_html(error, data) {  
+  var all_html = '';
   if (error) {
     all_html = '<div class="col-md-12 col-sm-12 col-xs-12">Error: '+data+'</div>';
     add_to_log('Error: ' + data);
@@ -86,10 +91,6 @@ function update_html(data, error) {
   show_log();
     //container.find('.ajax_content').first().html('<div class="row">' + data + '</div>');
     //container.find('.ajax_loading').first().css('display', 'none');
-}
-
-function hide_loader() {
-  $('.ajax_loading').css('display', 'none');
 }
 
 function send_req(mode, req_url, req_type) {
@@ -126,13 +127,13 @@ function send_req(mode, req_url, req_type) {
               api_0.ip = data.query;
               api_0.country = data.country;
               set_country(api_0.country);
-              update_html('IP: ' + api_0.ip + ', Country: ' + api_0.country + '<br>', false);
+              update_html(false);
               //Initiate the next API if all went well
               api_ip_info();                
               
             } else {
               //request failed, throw error
-              update_html('Ingen data ('+mode+').', true);
+              update_html(true, 'Ingen data ('+mode+').');
             }            
             break;
 
@@ -153,18 +154,17 @@ function send_req(mode, req_url, req_type) {
                   }
                 }
                 api_1.entries.push(temp);
-                temp = '';
-                
+                temp = '';   
               }
               
               if (api_1.entries.length == 0) temp = 'No blacklist entries found.';
-              update_html(temp, false);
+              update_html(false, temp);
               
               hide_loader();
 
             } else {
               //request failed, throw error
-              update_html('Ingen data ('+mode+').', true);
+              update_html(true, 'Ingen data ('+mode+').');
             }            
             break;
 
@@ -177,19 +177,19 @@ function send_req(mode, req_url, req_type) {
       } else {
         //request failed, timed out, etc..
         //console.log('3 mode:' + mode);
-        if (mode == 0) update_html(textStatus + ' ('+mode+')', true);
+        if (mode == 0) update_html(true, textStatus + ' ('+mode+')');
         if (mode == 1) {
           
           if (api_0.ip.indexOf(':') < 0) {
-            update_html(textStatus, true);
+            update_html(true, textStatus);
           } else {
             if (maxtries < maxtries_val) {
               maxtries++;
-              all_html = '';
+              //all_html = ''; nollställ all hämtad html
               add_to_log('Retrying for IPV4..');
               api_domain_to_ip_country();
             } else {
-              update_html('Maximum retries reached.', true);
+              update_html(true, 'Maximum retries reached.');
               //hide_loader();
             }
             
@@ -218,7 +218,7 @@ $('#domain').click(function() {
 
   log = [];
   maxtries = 0;
-  all_html = '';
+  //all_html = '';
   api_0.domain = $(this).siblings('input').val();
   api_0.ip = '';
   api_0.country = '';
