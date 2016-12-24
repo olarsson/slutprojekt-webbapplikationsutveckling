@@ -68,23 +68,27 @@ function parse_json(data) { return (data ? jQuery.parseJSON(data) : data); }
 function add_to_log(str) { log.push(str); }
 
 function show_log() {
-  var str;
+  var str = '';
   for (var i in log) str += log[i]+'<br>';
   $('.ajax_log').html('<div class="row">' + str + '</div>');
 }
 
-function hide_loader() {
-  $('.ajax_loading').css('display', 'none');
+function progress(start) {
+  $('.ajax_loading').css('display', (start ? 'block' : 'none'));
+  $('#domain').attr('disabled', (start ? 'true' : 'false'));
 }
 
 function update_html(error, data) {  
   var all_html = '';
   if (error) {
-    all_html = '<div class="col-md-12 col-sm-12 col-xs-12">Error: '+data+'</div>';
+    all_html = '<div class="col-md-12 col-sm-12 col-xs-12">An error occured. See the log entries for more information.</div>';
     add_to_log('Error: ' + data);
-    hide_loader();
+    progress(false);
   } else {
-    all_html += data;
+    //all_html += data;
+    all_html += `<p>Country: ${api_0.country}, Domain: ${api_0.domain}, IP: ${api_0.ip}</p>`;
+    for (var i in api_1.entries) all_html += `<p>Entry ${parseInt(i) + 1}: ${api_1.entries[i]}</p>`;
+    if (api_1.entries.length == 0) all_html += '<p>No blacklist entries found.</p>';
     add_to_log('Fetching results..');
   }
   $('.ajax_content').html('<div class="row">' + all_html + '</div>');
@@ -98,6 +102,8 @@ function send_req(mode, req_url, req_type) {
   var data, html = '';
 
   $('.ajax_loading').css('display', 'block');
+  
+  add_to_log('Sending request with API ' + (parseInt(mode) + 1) + '..');
 
   $.ajax({
 
@@ -110,11 +116,8 @@ function send_req(mode, req_url, req_type) {
     complete: function (jqXHR, textStatus) {
       
       //console.log(jqXHR.responseText);
-      //console.log('1');
 
       if (textStatus == 'success') {
-        
-        //console.log('2');
         
         if (req_type == 'json') data = parse_json(jqXHR.responseText);
 
@@ -133,7 +136,8 @@ function send_req(mode, req_url, req_type) {
               
             } else {
               //request failed, throw error
-              update_html(true, 'Ingen data ('+mode+').');
+              update_html(true, 'No data.');
+              progress(false);
             }            
             break;
 
@@ -141,9 +145,7 @@ function send_req(mode, req_url, req_type) {
           case 1:
             
             if (data.hasOwnProperty("results")) {
-              
-              //var temp = data.results.length + ' blacklist entries found<br>';
-              
+             
               var temp;
               
               for (var i in data.results) {
@@ -154,18 +156,18 @@ function send_req(mode, req_url, req_type) {
                   }
                 }
                 api_1.entries.push(temp);
-                temp = '';   
+                temp = '';
               }
               
               if (api_1.entries.length == 0) temp = 'No blacklist entries found.';
               update_html(false, temp);
-              
-              hide_loader();
+              //progress(false);
 
             } else {
               //request failed, throw error
-              update_html(true, 'Ingen data ('+mode+').');
-            }            
+              update_html(true, 'No data.');
+            }
+            progress(false);
             break;
 
         }
@@ -186,11 +188,12 @@ function send_req(mode, req_url, req_type) {
             if (maxtries < maxtries_val) {
               maxtries++;
               //all_html = ''; nollställ all hämtad html
-              add_to_log('Retrying for IPV4..');
+              //api_1.entries = [];
+              add_to_log('Error getting IP, retrying for IPV4..');
               api_domain_to_ip_country();
             } else {
               update_html(true, 'Maximum retries reached.');
-              //hide_loader();
+              progress(false);
             }
             
           }
@@ -216,12 +219,14 @@ function api_domain_to_ip_country() {
 
 $('#domain').click(function() {
 
+  progress(true);
   log = [];
   maxtries = 0;
   //all_html = '';
   api_0.domain = $(this).siblings('input').val();
   api_0.ip = '';
   api_0.country = '';
+  api_1.entries = [];
   api_domain_to_ip_country();
   return false;
 
