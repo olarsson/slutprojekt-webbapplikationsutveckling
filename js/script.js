@@ -18,9 +18,17 @@ var api_0 = {
 };
 
 var api_1 = {
+  count: 0,
   entries: []
 };
 
+function add_new_item(title, desc) {
+  var item_object = {
+    title: title,
+    desc: desc
+  }
+  return item_object;
+}
 
 //Run this when the DOM is ready
 $(document).ready(function() {
@@ -75,7 +83,10 @@ function show_log() {
 
 function progress(start) {
   $('.ajax_loading').css('display', (start ? 'block' : 'none'));
-  $('#domain').attr('disabled', (start ? 'true' : 'false'));
+  
+  (start ? $('#domain').attr('disabled', 'true') : $('#domain').removeAttr('disabled'));
+  
+
 }
 
 function update_html(error, data) {  
@@ -87,8 +98,19 @@ function update_html(error, data) {
   } else {
     //all_html += data;
     all_html += `<p>Country: ${api_0.country}, Domain: ${api_0.domain}, IP: ${api_0.ip}</p>`;
-    for (var i in api_1.entries) all_html += `<p>Entry ${parseInt(i) + 1}: ${api_1.entries[i]}</p>`;
-    if (api_1.entries.length == 0) all_html += '<p>No blacklist entries found.</p>';
+    all_html += `<p>Blacklist entries: ${api_1.count}</p>`;
+    for (var i in api_1.entries) {
+      //all_html += `<p>Entry ${parseInt(i) + 1}</p>`;
+      all_html += `<row>`;
+      for (var ii in api_1.entries[i]) {
+        //all_html += `${api_1.entries[i][ii].title} :: ${api_1.entries[i][ii].desc}<br>`;
+        all_html += `<div class="col-xs-4">${api_1.entries[i][ii].title}</div><div class="col-xs-8">${api_1.entries[i][ii].desc}</div>`;
+      }
+      all_html += `</row>`;
+      //all_html += `<p>Entry ${parseInt(i) + 1}: ${api_1.entries[i]}</p>`;
+      
+    }
+    //if (api_1.entries.length == 0) all_html += '<p>No blacklist entries found.</p>';
     add_to_log('Fetching results..');
   }
   $('.ajax_content').html('<div class="row">' + all_html + '</div>');
@@ -101,7 +123,7 @@ function send_req(mode, req_url, req_type) {
 
   var data, html = '';
 
-  $('.ajax_loading').css('display', 'block');
+  //$('.ajax_loading').css('display', 'block');
   
   add_to_log('Sending request with API ' + (parseInt(mode) + 1) + '..');
 
@@ -146,21 +168,32 @@ function send_req(mode, req_url, req_type) {
             
             if (data.hasOwnProperty("results")) {
              
-              var temp;
+              //var temp = '';
+              
+              //console.info(data.results)
+              
+              api_1.count = data.count;
               
               for (var i in data.results) {
-                temp += data.results[i].description + '<br>';
+                //temp = '<b>' + data.results[i].description + '</b><br>';
+                //var temp = data.count + ' entries found. Showing the first 10..<br>';
+                var temp_arr = [];
                 for (var e in data.results[i]) {
                   if (data.results[i].hasOwnProperty(e) && data.results[i][e]) {
-                    temp += e + ':' + data.results[i][e];
+                    temp_arr.push(add_new_item(e, data.results[i][e]));
+                    //temp += e + ':' + data.results[i][e] + '<br>';
+                    //console.log(e + ':' + data.results[i][e]);
                   }
                 }
-                api_1.entries.push(temp);
-                temp = '';
+                //api_1.entries.push(temp);
+                api_1.entries.push(temp_arr);
+                //console.info(temp_arr);
               }
               
-              if (api_1.entries.length == 0) temp = 'No blacklist entries found.';
-              update_html(false, temp);
+              
+              
+              //if (api_1.count == 0) temp = 'No blacklist entries found.';
+              update_html(false, '');
               //progress(false);
 
             } else {
@@ -189,7 +222,7 @@ function send_req(mode, req_url, req_type) {
               maxtries++;
               //all_html = ''; nollställ all hämtad html
               //api_1.entries = [];
-              add_to_log('Error getting IP, retrying for IPV4..');
+              add_to_log('Error, have IPV6, retrying for IPV4..');
               api_domain_to_ip_country();
             } else {
               update_html(true, 'Maximum retries reached.');
