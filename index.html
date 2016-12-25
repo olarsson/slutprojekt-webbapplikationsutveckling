@@ -9,19 +9,24 @@
   </head>
   <body>
 
-    <div class="wrapper">
+    <div class="container">
       
       <h1 class="text-xs-center">Domain research tool</h1>
       
       <form>
         <div class="text-xs-center">
-        <input type="text" placeholder="Domain name" value="github.kr">
-        <button id="domain" type="submit">Search</button>        
+        <input type="text" placeholder="Domain name" value="test.com">
+        <button id="domain" type="submit">Search</button>  
+          
+        <div class="ajax_log winsmall">
+          <div class="divsmall">Log</div>
+          <div class="divlarge">All the content is showing now.</div>
+        </div>
           
         <div class="ajax_container">
-          <div class="ajax_log"></div>
           <div class="ajax_loading"><img src="img/loading.gif" height="50" width="50"></div>
-          <div class="ajax_content text-xs-center"></div>
+          <!--<div class="ajax_log"></div>-->
+          <div class="ajax_content"></div>
         </div>
           </div>
       </form>      
