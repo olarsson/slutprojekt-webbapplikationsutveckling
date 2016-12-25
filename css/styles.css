@@ -113,5 +113,12 @@ a:hover {
   background: yellow; }
 
 /************************* */
+.entry_title {
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 0.8em; }
+
+.entry_row {
+  margin-bottom: 30px; }
 
 /*# sourceMappingURL=styles.css.map */

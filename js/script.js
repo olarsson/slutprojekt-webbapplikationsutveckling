@@ -22,6 +22,10 @@ var api_1 = {
   entries: []
 };
 
+var api_2 = {
+  domains: []
+};
+
 function add_new_item(title, desc) {
   var item_object = {
     title: title,
@@ -83,10 +87,7 @@ function show_log() {
 
 function progress(start) {
   $('.ajax_loading').css('display', (start ? 'block' : 'none'));
-  
-  (start ? $('#domain').attr('disabled', 'true') : $('#domain').removeAttr('disabled'));
-  
-
+  (start ? $('#domain').attr('disabled', 'true') : $('#domain').removeAttr('disabled')); 
 }
 
 function update_html(error, data) {  
@@ -98,15 +99,15 @@ function update_html(error, data) {
   } else {
     //all_html += data;
     all_html += `<p>Country: ${api_0.country}, Domain: ${api_0.domain}, IP: ${api_0.ip}</p>`;
-    all_html += `<p>Blacklist entries: ${api_1.count}</p>`;
+    all_html += (api_1.count == 0 ? `<p>No blacklist entries found.</p>` : `<p>${api_1.count} blacklist entries found for IP ${api_0.ip}</p>`);
     for (var i in api_1.entries) {
       //all_html += `<p>Entry ${parseInt(i) + 1}</p>`;
-      all_html += `<row>`;
+      all_html += `<div class="row text-xs-left entry_row">`;
       for (var ii in api_1.entries[i]) {
         //all_html += `${api_1.entries[i][ii].title} :: ${api_1.entries[i][ii].desc}<br>`;
-        all_html += `<div class="col-xs-4">${api_1.entries[i][ii].title}</div><div class="col-xs-8">${api_1.entries[i][ii].desc}</div>`;
+        all_html += `<div class="col-xs-2 entry_title">${api_1.entries[i][ii].title}</div><div class="col-xs-10">${api_1.entries[i][ii].desc}</div>`;
       }
-      all_html += `</row>`;
+      all_html += `</div>`;
       //all_html += `<p>Entry ${parseInt(i) + 1}: ${api_1.entries[i]}</p>`;
       
     }
@@ -167,41 +168,50 @@ function send_req(mode, req_url, req_type) {
           case 1:
             
             if (data.hasOwnProperty("results")) {
-             
-              //var temp = '';
-              
-              //console.info(data.results)
               
               api_1.count = data.count;
               
               for (var i in data.results) {
-                //temp = '<b>' + data.results[i].description + '</b><br>';
-                //var temp = data.count + ' entries found. Showing the first 10..<br>';
                 var temp_arr = [];
                 for (var e in data.results[i]) {
                   if (data.results[i].hasOwnProperty(e) && data.results[i][e]) {
                     temp_arr.push(add_new_item(e, data.results[i][e]));
-                    //temp += e + ':' + data.results[i][e] + '<br>';
-                    //console.log(e + ':' + data.results[i][e]);
                   }
                 }
-                //api_1.entries.push(temp);
                 api_1.entries.push(temp_arr);
-                //console.info(temp_arr);
               }
-              
-              
-              
-              //if (api_1.count == 0) temp = 'No blacklist entries found.';
+
               update_html(false, '');
+              api_other_domains();
               //progress(false);
 
             } else {
               //request failed, throw error
               update_html(true, 'No data.');
             }
-            progress(false);
+            //progress(false);
             break;
+            
+          case 2:
+            
+            if (data.hasOwnProperty("response")) {
+              
+              for (var i in data.response.domains) {
+                if (parseInt(i) + 1 == 25) {
+                  break;
+                } else { api_2.domains.push(data.response.domains[i]); }
+              }
+              
+              //console.info(data.response.domains);
+              //console.info(api_2.domains);
+              
+              update_html(false, '');
+            } else {
+              //request failed, throw error
+              update_html(true, 'No data.');
+            }
+            progress(false);
+            break;            
 
         }
 
@@ -212,7 +222,7 @@ function send_req(mode, req_url, req_type) {
       } else {
         //request failed, timed out, etc..
         //console.log('3 mode:' + mode);
-        if (mode == 0) update_html(true, textStatus + ' ('+mode+')');
+        if (mode == 0 || mode == 2) update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
         if (mode == 1) {
           
           if (api_0.ip.indexOf(':') < 0) {
@@ -220,8 +230,6 @@ function send_req(mode, req_url, req_type) {
           } else {
             if (maxtries < maxtries_val) {
               maxtries++;
-              //all_html = ''; nollställ all hämtad html
-              //api_1.entries = [];
               add_to_log('Error, have IPV6, retrying for IPV4..');
               api_domain_to_ip_country();
             } else {
@@ -241,33 +249,35 @@ function send_req(mode, req_url, req_type) {
 
 }
 
-function api_ip_info() {
-  send_req(1, encodeURI("https://cymon.io/api/nexus/v1/ip/" + api_0.ip + "/events/"), "json");
-}
-
 function api_domain_to_ip_country() {
   send_req(0, encodeURI("http://ip-api.com/json/" + api_0.domain), "json");
 }
 
+function api_ip_info() {
+  send_req(1, encodeURI("https://cymon.io/api/nexus/v1/ip/" + api_0.ip + "/events/"), "json");
+}
+
+function api_other_domains() {
+  send_req(2, encodeURI("http://reverseip.logontube.com/?url=" + api_0.domain + "&output=json"), "json");
+}
 
 $('#domain').click(function() {
-
   progress(true);
   log = [];
   maxtries = 0;
-  //all_html = '';
   api_0.domain = $(this).siblings('input').val();
   api_0.ip = '';
   api_0.country = '';
   api_1.entries = [];
+  api_2.domains = [];
   api_domain_to_ip_country();
   return false;
-
 });
 
 //api 1 = google maps
-//api 2 = ip-api.com
-//api 3 = cymon.io/api/nexus/v1/ip/
+//api 2 = ip-api.com (domain to ip + country)
+//api 3 = cymon.io/api/nexus/v1/ip/ (ip blacklist info)
+//api 4 = reverseip.logontube.com (domains hosted on ip)
 
 
 
