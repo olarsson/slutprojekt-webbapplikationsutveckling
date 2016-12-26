@@ -38,25 +38,28 @@ a:hover
   border-bottom: 2px solid #fff
 
 .ajax_loading
-  position: absolute
   display: none
-  background: rgba(255,255,255,0.85)
-  top: 0
-  left: 0
+  /*background: rgba(255,255,255,0.85)*/
   width: 100%
   height: 100%
-  z-index: 1
 
 .ajax_loading img
   margin: 0 auto
   position: relative
-  top: 50%
-  transform: translateY(-50%)
+  /*top: 50%*/
+  /*transform: translateY(-50%)*/
   
 #ajax_log, #ajax_content
   display: block
-  margin-top: 50px
+  margin-bottom: 10px
 
+.disabledsmall
+  background-color: #ccc !important
+  cursor: default !important
+
+.m30
+  margin-bottom: 30px
+  
 .winsmall
   display: block
   border: 1px solid #d0d0d0
@@ -70,14 +73,7 @@ a:hover
   background: #55595c
   color: #fff
   padding: 6px
-  
-.divsmall:hover + .divlarge
-  opacity: 1
-  max-height: 200px
-  padding: 5px
-  -webkit-transition: opacity .5s linear, max-height .5s linear
-  -moz-transition: opacity .5s linear, max-height .5s linear
-  transition: opacity .5s linear, max-height .5s linear
+  cursor: pointer
 
 .divlarge
   background-color: #f7f7f7
@@ -86,9 +82,14 @@ a:hover
   overflow: hidden
   max-height: 0px
   padding: 0px
-  -webkit-transition: opacity .25s linear, max-height .25s linear
-  -moz-transition: opacity .25s linear, max-height .25s linear
-  transition: opacity .25s linear, max-height .25s linear
+  
+.expand_me
+  opacity: 1 !important
+  max-height: 200px !important
+  padding: 5px !important
+  -webkit-transition: opacity .5s linear, max-height .5s linear
+  -moz-transition: opacity .5s linear, max-height .5s linear
+  transition: opacity .5s linear, max-height .5s linear
     
 /** google maps **/
 #map

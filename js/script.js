@@ -1,15 +1,19 @@
 "use strict";
 
+/*
+  add_new_item
+  comment code
+*/
+
 var geocoder;
 var map;
 var markers = [];
 
-//var data_domain;
-//var data_ip;
-//var all_html = '';
-var log = [];
-var maxtries = 0;
+var log = []; //Entries for the log are stored here
+var maxtries = 0; //Number of retries performed
 const maxtries_val = 2; //Maximum number of retries for getting the IPV4 address
+const timeout_s = 1; //Timeout in seconds for the AJAX requests
+var ajax_running = false; //Boolean that keeps track of if any AJAX requests are active
 
 var api_0 = {
   domain: '',
@@ -26,9 +30,9 @@ var api_2 = {
   domains: []
 };
 
+//Expand/hide the boxes on click
 $('.divsmall').click(function(){
-  console.info($(this).nextAll('.divlarge').first());
-  //console.log(this);
+  if (!ajax_running) $(this).nextAll('.divlarge').first().toggleClass('expand_me');
 });
 
 function add_new_item(title, desc) {
@@ -82,19 +86,31 @@ function initMap() { map = new google.maps.Map(document.getElementById('map'), {
 //Parse the JSON response
 function parse_json(data) { return (data ? jQuery.parseJSON(data) : data); }
 
+//Add an entry to the log
 function add_to_log(str) { log.push(str); }
 
+//Displays the contents of the log
 function show_log() {
   var str = '';
   for (var i in log) str += log[i]+'<br>';
   $('#ajax_log .divlarge').html('<div class="row">' + str + '</div>');
 }
 
+//Determines what happens when you start a new search or finish one (boolean)
 function progress(start) {
+  ajax_running = start;
   $('.ajax_loading').css('display', (start ? 'block' : 'none'));
-  (start ? $('#domain').attr('disabled', 'true') : $('#domain').removeAttr('disabled')); 
+  (start ? $('#domain').attr('disabled', 'true') : $('#domain').removeAttr('disabled'));
+  if (start) {
+    $('#ajax_log .divsmall').nextAll('.divlarge').first().addClass('expand_me');
+    $('#ajax_content .divsmall').nextAll('.divlarge').first().removeClass('expand_me');
+  } else {
+    $('#ajax_content .divsmall').nextAll('.divlarge').first().toggleClass('expand_me');
+  }
+  $('#ajax_content .divsmall').toggleClass('disabledsmall');
 }
 
+//Write the results of the search out to the page
 function update_html(error, data) {  
   var all_html = '';
   if (error) {
@@ -119,13 +135,16 @@ function update_html(error, data) {
       all_html += `<div class="col-xs-12"><p>${api_2.domains[i]}</p></div>`;
     }
     all_html += `</div></div>`;
-    
     add_to_log('Fetching results..');
   }
   $('#ajax_content .divlarge').html('<div class="row">' + all_html + '</div>');
   show_log();
 }
 
+//AJAX function for sending and interpreting the request
+//'mode' is an integer value between 0-2 that determines which API is used
+//'req_url' is the URL requested
+//'req_type' is the type of the request, json/script/text/html (currently only JSON implemented)
 function send_req(mode, req_url, req_type) {
 
   var data, html = '';
@@ -138,12 +157,10 @@ function send_req(mode, req_url, req_type) {
     dataType: req_type,
     type: "GET",
     cache: true,
-    timeout: 5000,
+    timeout: (timeout_s * 1000),
 
     complete: function (jqXHR, textStatus) {
       
-      //console.log(jqXHR.responseText);
-
       if (textStatus == 'success') {
         
         if (req_type == 'json') data = parse_json(jqXHR.responseText);
@@ -172,9 +189,7 @@ function send_req(mode, req_url, req_type) {
           case 1:
             
             if (data.hasOwnProperty("results")) {
-              
               api_1.count = data.count;
-              
               for (var i in data.results) {
                 var temp_arr = [];
                 for (var e in data.results[i]) {
@@ -187,13 +202,11 @@ function send_req(mode, req_url, req_type) {
 
               update_html(false, '');
               api_other_domains();
-              //progress(false);
 
             } else {
               //request failed, throw error
               update_html(true, 'No data.');
             }
-            //progress(false);
             break;
             
           //API = IP to domains
@@ -212,6 +225,8 @@ function send_req(mode, req_url, req_type) {
               //request failed, throw error
               update_html(true, 'No data.');
             }
+            
+            //all done, show results and restore visuals
             progress(false);
             break;            
 
@@ -219,13 +234,10 @@ function send_req(mode, req_url, req_type) {
 
 
 
-
-
       } else {
         //request failed, timed out, etc..
         if (mode == 0 || mode == 2) update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
         if (mode == 1) {
-          
           if (api_0.ip.indexOf(':') < 0) {
             update_html(true, textStatus);
           } else {
@@ -237,11 +249,10 @@ function send_req(mode, req_url, req_type) {
               update_html(true, 'Maximum retries reached.');
               progress(false);
             }
-            
           }
-
-          
         }
+        
+        
       }
 
     }
@@ -262,6 +273,7 @@ function api_other_domains() {
   send_req(2, encodeURI("http://reverseip.logontube.com/?url=" + api_0.domain + "&output=json"), "json");
 }
 
+//Starts a new search and resets settings to default state
 $('#domain').click(function() {
   progress(true);
   log = [];
@@ -271,6 +283,8 @@ $('#domain').click(function() {
   api_0.country = '';
   api_1.entries = [];
   api_2.domains = [];
+  add_to_log('Investigating '+api_0.domain);
+  show_log();
   api_domain_to_ip_country();
   return false;
 });
