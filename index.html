@@ -14,10 +14,16 @@
       <div class="row text-xs-center">
         <div class="col-md-12 m30">
           <h1 class="text-xs-center">Domain research tool</h1>
-          <form>
-            <input type="text" placeholder="Domain name" value="test.com">
-            <button id="domain" type="submit">Search</button>
+          <form id="domain">
+
+            <div class="input-group">
+              <input type="text" id="domain_text" class="form-control" placeholder="Type a domain name..">
+              <span class="input-group-btn">
+                <button class="btn btn-info" type="button" id="domain_button">Go!</button>
+              </span>
+            </div>
           </form>
+
         </div>
       </div>
 

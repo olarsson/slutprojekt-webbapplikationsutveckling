@@ -13,7 +13,7 @@ var markers = []; //Remembers the marker info for Google Maps API
 var log = []; //Entries for the log are stored here
 var maxtries = 0; //Number of retries performed
 const maxtries_val = 2; //Maximum number of retries for getting the IPV4 address
-const timeout_s = 1; //Timeout in seconds for the AJAX requests
+const timeout_s = 10; //Timeout in seconds for the AJAX requests
 var ajax_running = false; //Boolean that keeps track of if any AJAX requests are active
 
 //API for ip-api.com (domain to ip + country)
@@ -104,7 +104,7 @@ function show_log() {
 function progress(start) {
   ajax_running = start;
   $('.ajax_loading').css('display', (start ? 'block' : 'none'));
-  (start ? $('#domain').attr('disabled', 'true') : $('#domain').removeAttr('disabled'));
+  (start ? $('#domain_button').attr('disabled', 'true') : $('#domain').removeAttr('disabled'));
   if (start) {
     $('#ajax_log .divsmall').nextAll('.divlarge').first().addClass('expand_me');
     $('#ajax_content .divsmall').nextAll('.divlarge').first().removeClass('expand_me');
@@ -301,11 +301,12 @@ function api_other_domains() {
 }
 
 //Starts a new search and resets settings to default state
-$('#domain').click(function() {
+$('#domain').submit(function() {
   progress(true);
   log = [];
   maxtries = 0;
-  api_0.domain = $(this).siblings('input').val();
+  //api_0.domain = $(this).siblings('input').val();
+  api_0.domain = $('#domain_text').val();
   api_0.ip = '';
   api_0.country = '';
   api_1.entries = [];
@@ -320,6 +321,7 @@ $('#domain').click(function() {
 //api 2 = ip-api.com (domain to ip + country)
 //api 3 = cymon.io/api/nexus/v1/ip/ (ip blacklist info)
 //api 4 = reverseip.logontube.com (domains hosted on ip)
+
 
 
 
