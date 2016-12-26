@@ -3,11 +3,12 @@
 /*
   add_new_item
   comment code
+  rewrite google maps function
 */
 
 var geocoder;
 var map;
-var markers = [];
+var markers = []; //Remembers the marker info for Google Maps API
 
 var log = []; //Entries for the log are stored here
 var maxtries = 0; //Number of retries performed
@@ -15,17 +16,20 @@ const maxtries_val = 2; //Maximum number of retries for getting the IPV4 address
 const timeout_s = 1; //Timeout in seconds for the AJAX requests
 var ajax_running = false; //Boolean that keeps track of if any AJAX requests are active
 
+//API for ip-api.com (domain to ip + country)
 var api_0 = {
   domain: '',
   ip: '',
   country: ''
 };
 
+//API for cymon.io/api/nexus/v1/ip/ (ip blacklist info)
 var api_1 = {
   count: 0,
   entries: []
 };
 
+//API for reverseip.logontube.com (domains hosted on ip)
 var api_2 = {
   domains: []
 };
@@ -235,8 +239,31 @@ function send_req(mode, req_url, req_type) {
 
 
       } else {
+        
         //request failed, timed out, etc..
-        if (mode == 0 || mode == 2) update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
+        switch (mode) {
+          case 0:
+          case 2:
+            update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
+            progress(false);
+            break;
+          case 1:
+            if (api_0.ip.indexOf(':') < 0) {
+              update_html(true, textStatus);
+            } else {
+              if (maxtries < maxtries_val) {
+                maxtries++;
+                add_to_log('Error, have IPV6, retrying for IPV4..');
+                api_domain_to_ip_country();
+              } else {
+                update_html(true, 'Maximum retries reached.');
+                progress(false);
+              }
+            }            
+            break;   
+        }
+        
+        /*if (mode == 0 || mode == 2) update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
         if (mode == 1) {
           if (api_0.ip.indexOf(':') < 0) {
             update_html(true, textStatus);
@@ -250,7 +277,7 @@ function send_req(mode, req_url, req_type) {
               progress(false);
             }
           }
-        }
+        }*/
         
         
       }
