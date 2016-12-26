@@ -87,7 +87,7 @@ function add_to_log(str) { log.push(str); }
 function show_log() {
   var str = '';
   for (var i in log) str += log[i]+'<br>';
-  $('.ajax_log .divlarge').html('<div class="row">' + str + '</div>');
+  $('#ajax_log .divlarge').html('<div class="row">' + str + '</div>');
 }
 
 function progress(start) {
@@ -102,25 +102,27 @@ function update_html(error, data) {
     add_to_log('Error: ' + data);
     progress(false);
   } else {
+    all_html = '<div class="col-md-12 col-sm-12 col-xs-12">';
     all_html += `<p>Country: ${api_0.country}, Domain: ${api_0.domain}, IP: ${api_0.ip}</p>`;
     all_html += (api_1.count == 0 ? `<p>No blacklist entries found.</p>` : `<p>${api_1.count} blacklist entries found for IP ${api_0.ip}</p>`);
     for (var i in api_1.entries) {
-      all_html += `<div class="row text-xs-left entry_row">`;
+      all_html += `<div class="row entry_row">`;
       for (var ii in api_1.entries[i]) {
         all_html += `<div class="col-xs-2 entry_title">${api_1.entries[i][ii].title}</div><div class="col-xs-10">${api_1.entries[i][ii].desc}</div>`;
       }
       all_html += `</div>`;
     }
-    
-    all_html += `<div class="row text-xs-left entry_row"><h3>Domains hosted on IP</h3>`;
+    all_html += `</div>`;    
+    all_html += `<div class="row entry_row">`;
+    all_html += '<div class="col-md-12 col-sm-12 col-xs-12"><h3>Domains hosted on IP</h3>';
     for (var i in api_2.domains) {
       all_html += `<div class="col-xs-12"><p>${api_2.domains[i]}</p></div>`;
     }
-    all_html += `</div>`;
+    all_html += `</div></div>`;
     
     add_to_log('Fetching results..');
   }
-  $('.ajax_content').html('<div class="row">' + all_html + '</div>');
+  $('#ajax_content .divlarge').html('<div class="row">' + all_html + '</div>');
   show_log();
 }
 
