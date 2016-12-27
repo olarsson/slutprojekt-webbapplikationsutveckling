@@ -43,9 +43,11 @@ a:hover {
   /*top: 50% */
   /*transform: translateY(-50%) */ }
 
-#ajax_log, #ajax_content {
+#ajax_log, #ajax_content, #ajax_map {
   display: block;
-  margin-bottom: 10px; }
+  /* margin-bottom: 10px; */
+  width: 95%;
+  margin: auto auto 10px; }
 
 .disabledsmall {
   background-color: #ccc !important;
@@ -53,6 +55,12 @@ a:hover {
 
 .m30 {
   margin-bottom: 30px; }
+
+.divlarge h3 {
+  font-size: 0.8rem;
+  font-weight: bold;
+  font-style: italic;
+  color: #025aa5; }
 
 .winsmall {
   display: block;
@@ -79,8 +87,11 @@ a:hover {
 
 .expand_me {
   opacity: 1 !important;
-  max-height: 200px !important;
-  padding: 5px !important;
+  max-height: 100% !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
   -webkit-transition: opacity 0.5s linear, max-height 0.5s linear;
   -moz-transition: opacity 0.5s linear, max-height 0.5s linear;
   transition: opacity 0.5s linear, max-height 0.5s linear; }

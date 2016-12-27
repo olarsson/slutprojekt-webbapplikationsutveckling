@@ -104,7 +104,7 @@ function show_log() {
 function progress(start) {
   ajax_running = start;
   $('.ajax_loading').css('display', (start ? 'block' : 'none'));
-  (start ? $('#domain_button').attr('disabled', 'true') : $('#domain').removeAttr('disabled'));
+  (start ? $('#domain_button').attr('disabled', 'true') : $('#domain_button').removeAttr('disabled'));
   if (start) {
     $('#ajax_log .divsmall').nextAll('.divlarge').first().addClass('expand_me');
     $('#ajax_content .divsmall').nextAll('.divlarge').first().removeClass('expand_me');
@@ -127,18 +127,21 @@ function update_html(error, data) {
     all_html += (api_1.count == 0 ? `<p>No blacklist entries found.</p>` : `<p>${api_1.count} blacklist entries found for IP ${api_0.ip}</p>`);
     for (var i in api_1.entries) {
       all_html += `<div class="row entry_row">`;
+      //all_html += `<div class="entry_row">`;
       for (var ii in api_1.entries[i]) {
         all_html += `<div class="col-xs-2 entry_title">${api_1.entries[i][ii].title}</div><div class="col-xs-10">${api_1.entries[i][ii].desc}</div>`;
       }
       all_html += `</div>`;
     }
     all_html += `</div>`;    
-    all_html += `<div class="row entry_row">`;
-    all_html += '<div class="col-md-12 col-sm-12 col-xs-12"><h3>Domains hosted on IP</h3>';
+    //all_html += `<div class="row">`;
+    all_html += '<div class="col-md-12 col-sm-12 col-xs-12"><h3>Domains hosted on IP (showing max 25)</h3>';
     for (var i in api_2.domains) {
-      all_html += `<div class="col-xs-12"><p>${api_2.domains[i]}</p></div>`;
+      //all_html += `<div class="col-xs-12 text-xs-left">${api_2.domains[i]}</div>`;
+      all_html += `${api_2.domains[i]}<br>`;
     }
     all_html += `</div></div>`;
+    //all_html += `</div>`;
     add_to_log('Fetching results..');
   }
   $('#ajax_content .divlarge').html('<div class="row">' + all_html + '</div>');
@@ -174,19 +177,19 @@ function send_req(mode, req_url, req_type) {
           //API = domain > ip + country
           case 0:
             if (data.status == 'success') {
-              //github.es, sunet.se              
+              //github.es, sunet.se, cool.com, dfh.com
               api_0.ip = data.query;
               api_0.country = data.country;
               set_country(api_0.country);
               update_html(false);
               //Initiate the next API if all went well
-              api_ip_info();                
+              api_ip_info();
               
             } else {
               //request failed, throw error
               update_html(true, 'No data.');
-              progress(false);
-            }            
+              //progress(false);
+            }
             break;
 
           //API = ipv4 > blacklist info
@@ -210,6 +213,7 @@ function send_req(mode, req_url, req_type) {
             } else {
               //request failed, throw error
               update_html(true, 'No data.');
+              //progress(false);
             }
             break;
             
@@ -245,7 +249,7 @@ function send_req(mode, req_url, req_type) {
           case 0:
           case 2:
             update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
-            progress(false);
+            //progress(false);
             break;
           case 1:
             if (api_0.ip.indexOf(':') < 0) {
@@ -257,7 +261,7 @@ function send_req(mode, req_url, req_type) {
                 api_domain_to_ip_country();
               } else {
                 update_html(true, 'Maximum retries reached.');
-                progress(false);
+                //progress(false);
               }
             }            
             break;   

@@ -4,7 +4,7 @@
     <title>Ajax loading</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="dependencies/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous"> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
     <link rel="stylesheet" href="css/styles.css">
   </head>
   <body>
@@ -27,31 +27,54 @@
         </div>
       </div>
 
-      <div class="row text-xs-center">
-        <div class="col-md-6 col-sm-12">
-          <div class="ajax_loading"><img src="img/loading.gif" height="50" width="50"></div>
-          <div id="ajax_log" class="winsmall loading">
-            <div class="divsmall">Status log</div>
-            <div class="divlarge">No events yet, waiting to begin.</div>
+      <div class="row">
+
+        <div class="ajax_loading"><img src="img/loading.gif" height="50" width="50"></div>
+
+        <div class="col-lg-6 col-md-12">
+
+          <div class="row">
+            <div id="ajax_log" class="winsmall loading text-xs-center">
+              <div class="divsmall">Status log</div>
+              <div class="divlarge">No events yet, waiting to begin.</div>
+            </div>
+          </div>          
+
+          <div class="row">
+            <div id="ajax_map" class="winsmall">
+              <div class="divsmall text-xs-center">IP location</div>
+              <div class="divlarge expand_me">
+                <div id="map"></div>
+              </div>
+            </div>
           </div>
-          <div id="ajax_content" class="winsmall">
-            <div class="divsmall">Content</div>
-            <div class="divlarge expand_me">The results will be displayed here.</div>
-          </div>              
+
         </div>
 
-        <div class="col-md-6 col-sm-12">
-          <div id="map"></div>
+        
+        <div class="col-lg-6 col-md-12">
+          
+          <div class="row">
+            <div id="ajax_content" class="winsmall">
+              <div class="divsmall text-xs-center">Content</div>
+              <div class="divlarge expand_me">The results will be displayed here.</div>
+            </div>
+          </div>
+          
         </div>
+
+
+
+
       </div>
-
-
 
     </div>
 
-    <script src="dependencies/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script src="dependencies/tether.min.js" integrity="sha384-XTs3FgkjiBgo8qjEjBk0tGmf3wPrWtA6coPfQDfFEY8AnYJwjalXCiosYRBIBZX8" crossorigin="anonymous"></script>
-    <script src="dependencies/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
     <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaM6e9WUmooG0ZvOuCfwl0a-OVDQUPOcw&callback=initMap"></script>
     <script src="js/script.js" type="text/javascript"></script>
 
