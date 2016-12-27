@@ -34,28 +34,6 @@ var api_2 = {
   domains: []
 };
 
-//Expand/hide the boxes on click
-$('.divsmall').click(function(){
-  if (!ajax_running) $(this).nextAll('.divlarge').first().toggleClass('expand_me');
-});
-
-function add_new_item(title, desc) {
-  var item_object = {
-    title: title,
-    desc: desc
-  }
-  return item_object;
-}
-
-//Run this when the DOM is ready
-$(document).ready(function() {
-  set_country('Sweden', true);
-});
-
-/* ----------------------- */
-/* <Google maps functions> */
-/* ----------------------- */
-
 //Set country on the google map
 function set_country(country, delete_marker = false) {
   if (!geocoder) geocoder = new google.maps.Geocoder();
@@ -84,9 +62,6 @@ function delete_markers() {
 //Initialize the google map
 function initMap() { map = new google.maps.Map(document.getElementById('map'), {zoom: 3}); }
 
-/* ----------------------- */
-
-
 //Parse the JSON response
 function parse_json(data) { return (data ? jQuery.parseJSON(data) : data); }
 
@@ -106,12 +81,12 @@ function progress(start) {
   $('.ajax_loading').css('display', (start ? 'block' : 'none'));
   (start ? $('#domain_button').attr('disabled', 'true') : $('#domain_button').removeAttr('disabled'));
   if (start) {
-    $('#ajax_log .divsmall').nextAll('.divlarge').first().addClass('expand_me');
-    $('#ajax_content .divsmall').nextAll('.divlarge').first().removeClass('expand_me');
+    $('.divlarge').removeClass('expand_me');
+    $('#ajax_log .divsmall').nextAll('.divlarge').first().addClass('expand_me');        
   } else {
-    $('#ajax_content .divsmall').nextAll('.divlarge').first().toggleClass('expand_me');
+    $('.divlarge').addClass('expand_me');
   }
-  $('#ajax_content .divsmall').toggleClass('disabledsmall');
+  $('.divsmall').css({'background-color':(start ? '#ccc' : '#55595c'),'cursor':(start ? 'default' : 'pointer')});
 }
 
 //Write the results of the search out to the page
@@ -123,28 +98,23 @@ function update_html(error, data) {
     progress(false);
   } else {
     all_html = '<div class="col-md-12 col-sm-12 col-xs-12">';
-    all_html += `<p>Country: ${api_0.country}, Domain: ${api_0.domain}, IP: ${api_0.ip}</p>`;
     all_html += (api_1.count == 0 ? `<p>No blacklist entries found.</p>` : `<p>${api_1.count} blacklist entries found for IP ${api_0.ip}</p>`);
     for (var i in api_1.entries) {
       all_html += `<div class="row entry_row">`;
-      //all_html += `<div class="entry_row">`;
-      for (var ii in api_1.entries[i]) {
-        all_html += `<div class="col-xs-2 entry_title">${api_1.entries[i][ii].title}</div><div class="col-xs-10">${api_1.entries[i][ii].desc}</div>`;
-      }
+      for (var ii in api_1.entries[i]) all_html += `<div class="col-xs-2 entry_title">${api_1.entries[i][ii].title}</div><div class="col-xs-10">${api_1.entries[i][ii].desc}</div>`;
       all_html += `</div>`;
     }
-    all_html += `</div>`;    
-    //all_html += `<div class="row">`;
-    all_html += '<div class="col-md-12 col-sm-12 col-xs-12"><h3>Domains hosted on IP (showing max 25)</h3>';
-    for (var i in api_2.domains) {
-      //all_html += `<div class="col-xs-12 text-xs-left">${api_2.domains[i]}</div>`;
-      all_html += `${api_2.domains[i]}<br>`;
-    }
-    all_html += `</div></div>`;
-    //all_html += `</div>`;
+    all_html += `</div>`;
+    $('#ajax_blacklist .divlarge').html('<div class="row">' + all_html + '</div>');
+    
+    all_html = '<div class="col-md-12 col-sm-12 col-xs-12">';
+    for (var i in api_2.domains) all_html += `${api_2.domains[i]}<br>`;
+    all_html += `</div>`;
+    $('#ajax_domains .divlarge').html('<div class="row">' + all_html + '</div>');
+    
+    $('#ajax_map_content').html(`<div class="row"><p>Country: ${api_0.country}, IP: ${api_0.ip}</p></div>`);
     add_to_log('Fetching results..');
   }
-  $('#ajax_content .divlarge').html('<div class="row">' + all_html + '</div>');
   show_log();
 }
 
@@ -177,7 +147,7 @@ function send_req(mode, req_url, req_type) {
           //API = domain > ip + country
           case 0:
             if (data.status == 'success') {
-              //github.es, sunet.se, cool.com, dfh.com
+              //github.es, sunet.se, cool.com, dfh.com, domain.com, olof.it
               api_0.ip = data.query;
               api_0.country = data.country;
               set_country(api_0.country);
@@ -188,7 +158,6 @@ function send_req(mode, req_url, req_type) {
             } else {
               //request failed, throw error
               update_html(true, 'No data.');
-              //progress(false);
             }
             break;
 
@@ -200,20 +169,16 @@ function send_req(mode, req_url, req_type) {
               for (var i in data.results) {
                 var temp_arr = [];
                 for (var e in data.results[i]) {
-                  if (data.results[i].hasOwnProperty(e) && data.results[i][e]) {
-                    temp_arr.push(add_new_item(e, data.results[i][e]));
-                  }
+                  if (data.results[i].hasOwnProperty(e) && data.results[i][e]) temp_arr.push( {'title':e, 'desc':data.results[i][e]} );
                 }
                 api_1.entries.push(temp_arr);
               }
-
               update_html(false, '');
               api_other_domains();
 
             } else {
               //request failed, throw error
               update_html(true, 'No data.');
-              //progress(false);
             }
             break;
             
@@ -249,7 +214,6 @@ function send_req(mode, req_url, req_type) {
           case 0:
           case 2:
             update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
-            //progress(false);
             break;
           case 1:
             if (api_0.ip.indexOf(':') < 0) {
@@ -261,27 +225,10 @@ function send_req(mode, req_url, req_type) {
                 api_domain_to_ip_country();
               } else {
                 update_html(true, 'Maximum retries reached.');
-                //progress(false);
               }
             }            
             break;   
         }
-        
-        /*if (mode == 0 || mode == 2) update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
-        if (mode == 1) {
-          if (api_0.ip.indexOf(':') < 0) {
-            update_html(true, textStatus);
-          } else {
-            if (maxtries < maxtries_val) {
-              maxtries++;
-              add_to_log('Error, have IPV6, retrying for IPV4..');
-              api_domain_to_ip_country();
-            } else {
-              update_html(true, 'Maximum retries reached.');
-              progress(false);
-            }
-          }
-        }*/
         
         
       }
@@ -297,7 +244,7 @@ function api_domain_to_ip_country() {
 }
 
 function api_ip_info() {
-  send_req(1, encodeURI("https://cymon.io/api/nexus/v1/ip/" + api_0.ip + "/events/"), "json");
+  send_req(1, encodeURI("https://cyfdmon.io/api/nexus/v1/ip/" + api_0.ip + "/events/"), "json");
 }
 
 function api_other_domains() {
@@ -307,9 +254,9 @@ function api_other_domains() {
 //Starts a new search and resets settings to default state
 $('#domain').submit(function() {
   progress(true);
+  delete_markers();
   log = [];
   maxtries = 0;
-  //api_0.domain = $(this).siblings('input').val();
   api_0.domain = $('#domain_text').val();
   api_0.ip = '';
   api_0.country = '';
@@ -319,6 +266,16 @@ $('#domain').submit(function() {
   show_log();
   api_domain_to_ip_country();
   return false;
+});
+
+//Expand/hide the boxes on click
+$('.divsmall').click(function(){
+  if (!ajax_running) $(this).nextAll('.divlarge').first().toggleClass('expand_me');
+});
+
+//Run this when the DOM is ready
+$(document).ready(function() {
+  set_country('Sweden', true);
 });
 
 //api 1 = google maps

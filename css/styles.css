@@ -3,10 +3,13 @@ html {
   font-size: 1em; }
 
 body {
-  background-color: #fff;
+  background-color: #e6e6e6;
   color: #000;
   height: 100%;
-  line-height: 1.2em; }
+  line-height: 1.2em;
+  font-family: "Sintony", sans-serif;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  transform: translate3d(0, 0, 0) !important; }
 
 img {
   display: block;
@@ -43,41 +46,32 @@ a:hover {
   /*top: 50% */
   /*transform: translateY(-50%) */ }
 
-#ajax_log, #ajax_content, #ajax_map {
+#ajax_log, #ajax_map, #ajax_blacklist, #ajax_domains {
   display: block;
-  /* margin-bottom: 10px; */
   width: 95%;
   margin: auto auto 10px; }
-
-.disabledsmall {
-  background-color: #ccc !important;
-  cursor: default !important; }
 
 .m30 {
   margin-bottom: 30px; }
 
-.divlarge h3 {
-  font-size: 0.8rem;
-  font-weight: bold;
-  font-style: italic;
-  color: #025aa5; }
-
 .winsmall {
-  display: block;
-  border: 1px solid #d0d0d0;
+  /*border: 1px solid #d0d0d0 */
   font-size: 0.8em;
   -webkit-box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.1);
   box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.1);
-  border-radius: 4px; }
+  /*border-radius: 4px */ }
 
 .divsmall {
   background: #55595c;
   color: #fff;
   padding: 6px;
-  cursor: pointer; }
+  cursor: pointer;
+  border-radius: 4px 4px 0px 0px; }
 
 .divlarge {
+  font-size: 0.8rem;
+  line-height: 1.3rem;
   background-color: #f7f7f7;
   opacity: 0;
   color: #333;
