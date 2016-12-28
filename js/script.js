@@ -1,9 +1,9 @@
 "use strict";
 
 /*
-  add_new_item
   comment code
-  rewrite google maps function
+  rensa css och linta js-kod
+  lägg till exempeldomäner
 */
 
 var geocoder;
@@ -20,18 +20,92 @@ var ajax_running = false; //Boolean that keeps track of if any AJAX requests are
 var api_0 = {
   domain: '',
   ip: '',
-  country: ''
+  country: '',
+
+  parse: function(data) {
+    if (data.status == 'success') {
+      //github.es, sunet.se, cool.com, dfh.com, domain.com, olof.it
+      this.ip = data.query;
+      this.country = data.country;
+      set_country(this.country);
+      update_html(false);
+      //Initiate the next API if all went well
+      api_ip_info();
+
+    } else {
+      //request failed, throw error
+      update_html(true, 'No data.');
+    }    
+  },
+
+  error_func: function(textStatus, mode) {
+    update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
+  }
+
 };
 
 //API for cymon.io/api/nexus/v1/ip/ (ip blacklist info)
 var api_1 = {
   count: 0,
-  entries: []
+  entries: [],
+
+  parse: function(data) {
+    if (data.hasOwnProperty("results")) {
+      this.count = data.count;
+      for (var i in data.results) {
+        var temp_arr = [];
+        for (var e in data.results[i]) {
+          if (data.results[i].hasOwnProperty(e) && data.results[i][e]) temp_arr.push( {'title':e, 'desc':data.results[i][e]} );
+        }
+        this.entries.push(temp_arr);
+      }
+      update_html(false, '');
+      api_other_domains();
+    } else {
+      //request failed, throw error
+      update_html(true, 'No data.');
+    }    
+  },
+
+  error_func: function(textStatus, mode) {
+    if (api_0.ip.indexOf(':') < 0) {
+      update_html(true, textStatus);
+    } else {
+      if (maxtries < maxtries_val) {
+        maxtries++;
+        add_to_log('Error, have IPV6, retrying for IPV4..');
+        api_domain_to_ip_country();
+      } else {
+        update_html(true, 'Maximum retries reached.');
+      }
+    }
+  }
+
 };
 
 //API for reverseip.logontube.com (domains hosted on ip)
 var api_2 = {
-  domains: []
+  domains: [],
+
+  parse: function(data) {
+    if (data.hasOwnProperty("response")) {
+      for (var i in data.response.domains) {
+        if (parseInt(i) + 1 == 25) {
+          break;
+        } else { this.domains.push(data.response.domains[i]); }
+      }
+      update_html(false, '');
+    } else {
+      //request failed, throw error
+      update_html(true, 'No data.');
+    }
+    //all done, show results and restore visuals
+    progress(false);    
+  },
+
+  error_func: function(textStatus, mode) {
+    update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
+  }
 };
 
 //Set country on the google map
@@ -93,28 +167,36 @@ function progress(start) {
 function update_html(error, data) {  
   var all_html = '';
   if (error) {
-    all_html = '<div class="col-md-12 col-sm-12 col-xs-12">An error occured. See the log entries for more information.</div>';
+    all_html = '<div class="col-xs-12">An error occured. See the log entries for more information.</div>';
     add_to_log('Error: ' + data);
     progress(false);
+  }
+
+
+  all_html = '<div class="col-xs-12">';
+  if (error) {
+    all_html += '<p>An error occured.</p>';
   } else {
-    all_html = '<div class="col-md-12 col-sm-12 col-xs-12">';
     all_html += (api_1.count == 0 ? `<p>No blacklist entries found.</p>` : `<p>${api_1.count} blacklist entries found for IP ${api_0.ip}</p>`);
-    for (var i in api_1.entries) {
-      all_html += `<div class="row entry_row">`;
-      for (var ii in api_1.entries[i]) all_html += `<div class="col-xs-2 entry_title">${api_1.entries[i][ii].title}</div><div class="col-xs-10">${api_1.entries[i][ii].desc}</div>`;
-      all_html += `</div>`;
-    }
-    all_html += `</div>`;
-    $('#ajax_blacklist .divlarge').html('<div class="row">' + all_html + '</div>');
-    
-    all_html = '<div class="col-md-12 col-sm-12 col-xs-12">';
-    for (var i in api_2.domains) all_html += `${api_2.domains[i]}<br>`;
-    all_html += `</div>`;
-    $('#ajax_domains .divlarge').html('<div class="row">' + all_html + '</div>');
-    
-    $('#ajax_map_content').html(`<div class="row"><p>Country: ${api_0.country}, IP: ${api_0.ip}</p></div>`);
     add_to_log('Fetching results..');
   }
+  for (var i in api_1.entries) {
+    all_html += `<div class="row entry_row">`;
+    for (var ii in api_1.entries[i]) all_html += `<div class="col-xs-2 entry_title">${api_1.entries[i][ii].title}</div><div class="col-xs-10">${api_1.entries[i][ii].desc}</div>`;
+    all_html += `</div>`;
+  }
+  all_html += `</div>`;
+  $('#ajax_blacklist .divlarge').html('<div class="row">' + all_html + '</div>');
+
+  all_html = '<div class="col-xs-12">';
+  for (var i in api_2.domains) all_html += `${api_2.domains[i]}<br>`;
+  if (error) all_html += '<p>An error occured</p>';
+  all_html += `</div>`;
+  $('#ajax_domains .divlarge').html('<div class="row">' + all_html + '</div>');
+
+  if (error) { all_html = '<p>An error occured</p>'; } else { all_html = `<div class="row"><p>Country: ${api_0.country}, IP: ${api_0.ip}</p></div>`; }
+  $('#ajax_map_content').html(all_html);
+
   show_log();
 }
 
@@ -125,7 +207,7 @@ function update_html(error, data) {
 function send_req(mode, req_url, req_type) {
 
   var data, html = '';
-  
+
   add_to_log('Sending request with API ' + (parseInt(mode) + 1) + '..');
 
   $.ajax({
@@ -137,100 +219,13 @@ function send_req(mode, req_url, req_type) {
     timeout: (timeout_s * 1000),
 
     complete: function (jqXHR, textStatus) {
-      
+
       if (textStatus == 'success') {
-        
         if (req_type == 'json') data = parse_json(jqXHR.responseText);
-
-        switch (mode) {
-            
-          //API = domain > ip + country
-          case 0:
-            if (data.status == 'success') {
-              //github.es, sunet.se, cool.com, dfh.com, domain.com, olof.it
-              api_0.ip = data.query;
-              api_0.country = data.country;
-              set_country(api_0.country);
-              update_html(false);
-              //Initiate the next API if all went well
-              api_ip_info();
-              
-            } else {
-              //request failed, throw error
-              update_html(true, 'No data.');
-            }
-            break;
-
-          //API = ipv4 > blacklist info
-          case 1:
-            
-            if (data.hasOwnProperty("results")) {
-              api_1.count = data.count;
-              for (var i in data.results) {
-                var temp_arr = [];
-                for (var e in data.results[i]) {
-                  if (data.results[i].hasOwnProperty(e) && data.results[i][e]) temp_arr.push( {'title':e, 'desc':data.results[i][e]} );
-                }
-                api_1.entries.push(temp_arr);
-              }
-              update_html(false, '');
-              api_other_domains();
-
-            } else {
-              //request failed, throw error
-              update_html(true, 'No data.');
-            }
-            break;
-            
-          //API = IP to domains
-          case 2:
-            
-            if (data.hasOwnProperty("response")) {
-              
-              for (var i in data.response.domains) {
-                if (parseInt(i) + 1 == 25) {
-                  break;
-                } else { api_2.domains.push(data.response.domains[i]); }
-              }
-              update_html(false, '');
-              
-            } else {
-              //request failed, throw error
-              update_html(true, 'No data.');
-            }
-            
-            //all done, show results and restore visuals
-            progress(false);
-            break;            
-
-        }
-
-
-
+        window['api_' + mode]["parse"](data);
       } else {
-        
         //request failed, timed out, etc..
-        switch (mode) {
-          case 0:
-          case 2:
-            update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
-            break;
-          case 1:
-            if (api_0.ip.indexOf(':') < 0) {
-              update_html(true, textStatus);
-            } else {
-              if (maxtries < maxtries_val) {
-                maxtries++;
-                add_to_log('Error, have IPV6, retrying for IPV4..');
-                api_domain_to_ip_country();
-              } else {
-                update_html(true, 'Maximum retries reached.');
-              }
-            }            
-            break;   
-        }
-        
-        
+        window['api_' + mode]["error_func"](textStatus, mode);
       }
 
     }
@@ -244,7 +239,7 @@ function api_domain_to_ip_country() {
 }
 
 function api_ip_info() {
-  send_req(1, encodeURI("https://cyfdmon.io/api/nexus/v1/ip/" + api_0.ip + "/events/"), "json");
+  send_req(1, encodeURI("https://cymon.io/api/nexus/v1/ip/" + api_0.ip + "/events/"), "json");
 }
 
 function api_other_domains() {

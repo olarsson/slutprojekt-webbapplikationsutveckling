@@ -46,6 +46,9 @@ a:hover {
   /*top: 50% */
   /*transform: translateY(-50%) */ }
 
+#dtool_container {
+  margin: 100px auto 100px auto; }
+
 #ajax_log, #ajax_map, #ajax_blacklist, #ajax_domains {
   display: block;
   width: 95%;
