@@ -16,6 +16,9 @@ const maxtries_val = 2; //Maximum number of retries for getting the IPV4 address
 const timeout_s = 10; //Timeout in seconds for the AJAX requests
 var ajax_running = false; //Boolean that keeps track of if any AJAX requests are active
 
+
+/********************************************************/
+
 //API for ip-api.com (domain to ip + country)
 var api_0 = {
   domain: '',
@@ -24,7 +27,6 @@ var api_0 = {
 
   parse: function(data) {
     if (data.status == 'success') {
-      //github.es, sunet.se, cool.com, dfh.com, domain.com, olof.it
       this.ip = data.query;
       this.country = data.country;
       set_country(this.country);
@@ -43,6 +45,8 @@ var api_0 = {
   }
 
 };
+
+/********************************************************/
 
 //API for cymon.io/api/nexus/v1/ip/ (ip blacklist info)
 var api_1 = {
@@ -83,6 +87,8 @@ var api_1 = {
 
 };
 
+/********************************************************/
+
 //API for reverseip.logontube.com (domains hosted on ip)
 var api_2 = {
   domains: [],
@@ -100,7 +106,8 @@ var api_2 = {
       update_html(true, 'No data.');
     }
     //all done, show results and restore visuals
-    progress(false);    
+    //progress(false);    
+    api_whois();
   },
 
   error_func: function(textStatus, mode) {
@@ -108,7 +115,34 @@ var api_2 = {
   }
 };
 
-//Set country on the google map
+/********************************************************/
+
+//API for http://dotnul.com/whois-lookup/ (whois info for the domain)
+var api_3 = {
+  whois: '',
+
+  parse: function(data) {
+
+    if (data.hasOwnProperty("whois")) {
+      this.whois = data.whois;
+      update_html(false, '');
+    } else {
+      //request failed, throw error
+      update_html(true, 'No data.');
+    }
+    //all done, show results and restore visuals
+    progress(false);
+  },
+
+  error_func: function(textStatus, mode) {
+    update_html(true, textStatus + ' ('+(parseInt(mode) + 1)+')');
+  }
+
+};
+
+/********************************************************/
+
+//API for google maps, sets the country
 function set_country(country, delete_marker = false) {
   if (!geocoder) geocoder = new google.maps.Geocoder();
   geocoder.geocode( { 'address': country }, function(results, status) {
@@ -146,7 +180,7 @@ function add_to_log(str) { log.push(str); }
 function show_log() {
   var str = '';
   for (var i in log) str += log[i]+'<br>';
-  $('#ajax_log .divlarge').html('<div class="row">' + str + '</div>');
+  $('#ajax_log .divlarge').html('<div class="row"><div class="col-xs-12">' + str + '</div></div>');
 }
 
 //Determines what happens when you start a new search or finish one (boolean)
@@ -160,7 +194,7 @@ function progress(start) {
   } else {
     $('.divlarge').addClass('expand_me');
   }
-  $('.divsmall').css({'background-color':(start ? '#ccc' : '#55595c'),'cursor':(start ? 'default' : 'pointer')});
+  $('.divsmall').css({'color':(!start ? '#6f6f6f' : 'rgba(111, 111, 111, 0.3)'),'cursor':(start ? 'default' : 'pointer')});
 }
 
 //Write the results of the search out to the page
@@ -170,40 +204,41 @@ function update_html(error, data) {
     all_html = '<div class="col-xs-12">An error occured. See the log entries for more information.</div>';
     add_to_log('Error: ' + data);
     progress(false);
-  }
-
-
-  all_html = '<div class="col-xs-12">';
-  if (error) {
-    all_html += '<p>An error occured.</p>';
   } else {
+
+    all_html = '<div class="col-xs-12">';
     all_html += (api_1.count == 0 ? `<p>No blacklist entries found.</p>` : `<p>${api_1.count} blacklist entries found for IP ${api_0.ip}</p>`);
     add_to_log('Fetching results..');
-  }
-  for (var i in api_1.entries) {
-    all_html += `<div class="row entry_row">`;
-    for (var ii in api_1.entries[i]) all_html += `<div class="col-xs-2 entry_title">${api_1.entries[i][ii].title}</div><div class="col-xs-10">${api_1.entries[i][ii].desc}</div>`;
+
+    for (var i in api_1.entries) {
+      all_html += `<div class="row entry_row">`;
+      for (var ii in api_1.entries[i]) all_html += `<div class="col-xs-2 entry_title">${api_1.entries[i][ii].title}</div><div class="col-xs-10">${api_1.entries[i][ii].desc}</div>`;
+      all_html += `</div>`;
+    }
     all_html += `</div>`;
+    $('#ajax_blacklist .divlarge').html('<div class="row">' + all_html + '</div>');
+
+    all_html = '<div class="col-xs-12">';
+    for (var i in api_2.domains) all_html += `${api_2.domains[i]}<br>`;
+    all_html += `</div>`;
+    $('#ajax_domains .divlarge').html('<div class="row">' + all_html + '</div>');
+    
+    all_html = `<div class="row"><div class="col-xs-12">${api_3.whois}</div></div>`;
+    $('#ajax_whois .divlarge').html(all_html);    
+
+    all_html = `<div class="row"><p>Country: ${api_0.country}, IP: ${api_0.ip}</p></div>`;
+    $('#ajax_map_content').html(all_html);
+
   }
-  all_html += `</div>`;
-  $('#ajax_blacklist .divlarge').html('<div class="row">' + all_html + '</div>');
-
-  all_html = '<div class="col-xs-12">';
-  for (var i in api_2.domains) all_html += `${api_2.domains[i]}<br>`;
-  if (error) all_html += '<p>An error occured</p>';
-  all_html += `</div>`;
-  $('#ajax_domains .divlarge').html('<div class="row">' + all_html + '</div>');
-
-  if (error) { all_html = '<p>An error occured</p>'; } else { all_html = `<div class="row"><p>Country: ${api_0.country}, IP: ${api_0.ip}</p></div>`; }
-  $('#ajax_map_content').html(all_html);
 
   show_log();
 }
 
+
 //AJAX function for sending and interpreting the request
-//'mode' is an integer value between 0-2 that determines which API is used
+//'mode' is an integer value between 0-3 that determines which API is used
 //'req_url' is the URL requested
-//'req_type' is the type of the request, json/script/text/html (currently only JSON implemented)
+//'req_type' is the type of the request, json/jsonp/script/text/html (JSON & JSONP implemented in the code)
 function send_req(mode, req_url, req_type) {
 
   var data, html = '';
@@ -222,6 +257,7 @@ function send_req(mode, req_url, req_type) {
 
       if (textStatus == 'success') {
         if (req_type == 'json') data = parse_json(jqXHR.responseText);
+        if (req_type == 'jsonp' && mode == 3) data = jqXHR.responseJSON;
         window['api_' + mode]["parse"](data);
       } else {
         //request failed, timed out, etc..
@@ -232,6 +268,11 @@ function send_req(mode, req_url, req_type) {
 
   });
 
+}
+
+function cbb(e) {
+  console.log('callback:');
+  console.info(e);
 }
 
 function api_domain_to_ip_country() {
@@ -246,9 +287,30 @@ function api_other_domains() {
   send_req(2, encodeURI("http://reverseip.logontube.com/?url=" + api_0.domain + "&output=json"), "json");
 }
 
+function api_whois() {
+
+  send_req(3, encodeURI("http://dotnul.com/api/whois/" + api_0.domain), "jsonp");
+  //send_req(3, encodeURI("http://dotnul.com/api/whois/" + api_0.domain + "?callback=cbb"), "jsonp");
+  //send_req(3, encodeURI("http://api.hackertarget.com/whois/?q=" + api_0.domain), "text");
+  //send_req(3, encodeURI("http://api.bulkwhoisapi.com/whoisAPI.php?domain=" + api_0.domain + "&token=usemeforfree"), "json");
+  //send_req(3, encodeURI("https://www.enclout.com/api/v1/whois/show.json?&auth_token=AGasdFCVrvsK43s8soBP&url=" + api_0.domain), "json");
+  //send_req(3, encodeURI("https://www.enclout.com/api/v1/whois/show.json?&auth_token=AGasdFCVrvsK43s8soBP&url=" + api_0.domain), "json");
+  //http://api.screenshotlayer.com/api/capture?access_key=061253fd57ed0de7400ec8951c92f1bb&url=http://google.com&viewport=1440x900&width=250
+}
+
+function change_page(cont) {
+  $(cont).fadeIn();
+}
+
+
+
 //Starts a new search and resets settings to default state
 $('#domain').submit(function() {
   progress(true);
+  $('#ajax_blacklist .divlarge').html('<div class="row"><div class="col-xs-12">The results will be displayed here.</div></div>');
+  $('#ajax_domains .divlarge').html('<div class="row"><div class="col-xs-12">The results will be displayed here.</div></div>');
+  $('#ajax_map_content').html('');
+  $('#ajax_whois .divlarge').html('<div class="row"><div class="col-xs-12">The results will be displayed here.</div></div>');  
   delete_markers();
   log = [];
   maxtries = 0;
@@ -257,6 +319,7 @@ $('#domain').submit(function() {
   api_0.country = '';
   api_1.entries = [];
   api_2.domains = [];
+  api_3.whois = '';
   add_to_log('Investigating '+api_0.domain);
   show_log();
   api_domain_to_ip_country();
@@ -277,6 +340,7 @@ $(document).ready(function() {
 //api 2 = ip-api.com (domain to ip + country)
 //api 3 = cymon.io/api/nexus/v1/ip/ (ip blacklist info)
 //api 4 = reverseip.logontube.com (domains hosted on ip)
+//api 5 = http://dotnul.com/whois-lookup/ (domain whois info)
 
 
 

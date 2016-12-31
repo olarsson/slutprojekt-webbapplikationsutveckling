@@ -1,15 +1,13 @@
 Beskrivning
 ---------------------------------------------------
-Det här är slutprojektet för kursen HTML, CSS, Javascript, Webbstandarder under min utbildningstid på Lernia YH-skola.
+Det här är slutprojektet för kursen Webbapplikationsutveckling under min utbildningstid på Lernia YH-skola.
 
 Teknologier
 ---------------------------------------------------
  - HTML5 för markup och CSS för styling
  - Bootstrap 4 för menyn och delar av layouten
  - Google Fonts för fonts
- - Font awesome för pilar i image slidern
- - JavaScript och jQuery
- - jQuery-UI för ytterligare effekter
+ - JavaScript och jQuery för funktion (ES6 standard)
 
 Skapat av
 ---------------------------------------------------

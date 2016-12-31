@@ -11,14 +11,35 @@
   </head>
   <body>
 
+    <div id="bg_overlay"></div>
+
     <div class="container">
 
-      <header>
+      <header>        
 
+        <nav class="navbar navbar-light text-xs-center">
+          <button class="navbar-toggler hidden-md-up" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"></button>
+          <div class="collapse navbar-toggleable-sm" id="navbarResponsive">
+            <ul class="nav navbar-nav nav-pills">
+              <li class="nav-item"><a class="nav-link" href="#program">Om sidan</a></li>
+              <li class="nav-item"><a class="nav-link" href="#talare">Domain Research Tool</a></li>
+            </ul>
+          </div>
+        </nav>
 
       </header>
 
       <main>
+
+        <div id="dtool_about">
+          <div class="row">
+            <div class="col-md-12 m30">
+              <h1 class="text-xs-center">Om sidan</h1>
+              <p>Den här sidan visar min "Domain Research Tool" som är skriven för att visa mina kunskaper inom främst AJAX. Sidan/verktyget är skrivet på engelska då terminologin var enklare att skriva ut och för att det känns smidigare.</p>
+              <p>Den här sidan använder HTML5, CSS, Bootstrap 4, Google Fonts, JavaScript med ES6 och jQuery.</p>
+            </div>
+          </div>
+        </div>
 
         <div id="dtool_container">
 
@@ -26,8 +47,17 @@
             <div class="col-md-12 m30">
               <form id="domain">
                 <h1 class="text-xs-center">Domain research tool</h1>
+                <p>Welcome, please enter your domain name and click on go.</p>
                 <div class="input-group">
-                  <input type="text" id="domain_text" class="form-control" placeholder="Type a domain name..">
+                  <input list="domain-list" type="text" placeholder="Type a domain name.." id="domain_text" class="form-control" autocomplete="off">
+                  <datalist id="domain-list">
+                    <option value="github.es">
+                    <option value="sunet.se">
+                    <option value="cool.com">
+                    <option value="dfh.com">
+                    <option value="domain.com">
+                    <option value="olof.it">
+                  </datalist>
                   <span class="input-group-btn">
                     <button class="btn btn-info" type="submit" id="domain_button">Go!</button>
                   </span>
@@ -39,23 +69,36 @@
 
           <div class="row">
 
-            <div class="ajax_loading"><img src="img/loading.gif" height="50" width="50"></div>
+            <div class="ajax_loading"><img src="svg/balls.svg" height="128" width="128"></div>
 
             <div class="col-lg-6 col-md-12">
 
               <div class="row">
-                <div id="ajax_log" class="winsmall loading text-xs-center">
-                  <div class="divsmall">Status log</div>
-                  <div class="divlarge">No events yet, waiting to begin.</div>
+                <div class="col-xs-12">
+                  <div id="ajax_log" class="winsmall loading text-xs-center">
+                    <div class="divsmall">Status log</div>
+                    <div class="divlarge expand_me">No events yet, waiting to begin.</div>
+                  </div>
                 </div>
               </div>          
 
               <div class="row">
-                <div id="ajax_map" class="winsmall">
-                  <div class="divsmall text-xs-center">IP location</div>
-                  <div class="divlarge">
-                    <div id="ajax_map_content" class="text-xs-center"></div>
-                    <div id="map"></div>
+                <div class="col-xs-12">
+                  <div id="ajax_map" class="winsmall">
+                    <div class="divsmall text-xs-center">IP location</div>
+                    <div class="divlarge">
+                      <div id="ajax_map_content" class="text-xs-center"></div>
+                      <div id="map"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xs-12">
+                  <div id="ajax_whois" class="winsmall">
+                    <div class="divsmall text-xs-center">WHOIS info for the domain</div>
+                    <div class="divlarge">The results will be displayed here.</div>
                   </div>
                 </div>
               </div>
@@ -66,18 +109,22 @@
             <div class="col-lg-6 col-md-12">
 
               <div class="row">
-                <div id="ajax_blacklist" class="winsmall">
-                  <div class="divsmall text-xs-center">IP blacklist entries</div>
-                  <div class="divlarge">The results will be displayed here.</div>
+                <div class="col-xs-12">
+                  <div id="ajax_blacklist" class="winsmall">
+                    <div class="divsmall text-xs-center">IP blacklist entries</div>
+                    <div class="divlarge">The results will be displayed here.</div>
+                  </div>
                 </div>
               </div>
 
               <div class="row">
-                <div id="ajax_domains" class="winsmall">
-                  <div class="divsmall text-xs-center">Domains hosted on IP (max 25)</div>
-                  <div class="divlarge">The results will be displayed here.</div>
+                <div class="col-xs-12">
+                  <div id="ajax_domains" class="winsmall">
+                    <div class="divsmall text-xs-center">Domains hosted on IP (max 25)</div>
+                    <div class="divlarge">The results will be displayed here.</div>
+                  </div>
                 </div>
-              </div>            
+              </div>
 
             </div>
 
@@ -86,6 +133,14 @@
         </div>
 
       </main>
+
+      <footer>
+        <div class="row">
+          <div class="col-xs-12">
+            <p>Created by Olof Larsson - <a href="https://github.com/olarsson/slutprojekt-webbapplikationsutveckling">github.com/olarsson</a></p>
+          </div>
+        </div>                  
+      </footer>
 
     </div>
 
