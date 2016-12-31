@@ -3,7 +3,7 @@
 /*
   comment code
   rensa css och linta js-kod
-  lägg till exempeldomäner
+  analyze site with w3
 */
 
 var geocoder;
@@ -15,7 +15,6 @@ var maxtries = 0; //Number of retries performed
 const maxtries_val = 2; //Maximum number of retries for getting the IPV4 address
 const timeout_s = 10; //Timeout in seconds for the AJAX requests
 var ajax_running = false; //Boolean that keeps track of if any AJAX requests are active
-
 
 /********************************************************/
 
@@ -89,7 +88,7 @@ var api_1 = {
 
 /********************************************************/
 
-//API for reverseip.logontube.com (domains hosted on ip)
+//API for reverseip.logontube.com (get domains hosted on ip)
 var api_2 = {
   domains: [],
 
@@ -168,7 +167,9 @@ function delete_markers() {
 };
 
 //Initialize the google map
-function initMap() { map = new google.maps.Map(document.getElementById('map'), {zoom: 3}); }
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {zoom: 3});
+}
 
 //Parse the JSON response
 function parse_json(data) { return (data ? jQuery.parseJSON(data) : data); }
@@ -218,19 +219,15 @@ function update_html(error, data) {
     all_html += `</div>`;
     $('#ajax_blacklist .divlarge').html('<div class="row">' + all_html + '</div>');
 
-    all_html = '<div class="col-xs-12">';
+    all_html = '';
     for (var i in api_2.domains) all_html += `${api_2.domains[i]}<br>`;
-    all_html += `</div>`;
-    $('#ajax_domains .divlarge').html('<div class="row">' + all_html + '</div>');
-    
-    all_html = `<div class="row"><div class="col-xs-12">${api_3.whois}</div></div>`;
-    $('#ajax_whois .divlarge').html(all_html);    
+    $('#ajax_domains .divlarge').html('<div class="row"><div class="col-xs-12">' + all_html + '</div></div>');
 
-    all_html = `<div class="row"><p>Country: ${api_0.country}, IP: ${api_0.ip}</p></div>`;
-    $('#ajax_map_content').html(all_html);
+    $('#ajax_whois .divlarge').html(`<div class="row"><div class="col-xs-12">${api_3.whois}</div></div>`);    
+
+    $('#ajax_map_content').html(`<div class="row"><p>Country: ${api_0.country}, IP: ${api_0.ip}</p></div>`);
 
   }
-
   show_log();
 }
 
@@ -270,37 +267,13 @@ function send_req(mode, req_url, req_type) {
 
 }
 
-function cbb(e) {
-  console.log('callback:');
-  console.info(e);
-}
+function api_domain_to_ip_country() { send_req(0, encodeURI("http://ip-api.com/json/" + api_0.domain), "json"); }
 
-function api_domain_to_ip_country() {
-  send_req(0, encodeURI("http://ip-api.com/json/" + api_0.domain), "json");
-}
+function api_ip_info() { send_req(1, encodeURI("https://cymon.io/api/nexus/v1/ip/" + api_0.ip + "/events/"), "json"); }
 
-function api_ip_info() {
-  send_req(1, encodeURI("https://cymon.io/api/nexus/v1/ip/" + api_0.ip + "/events/"), "json");
-}
+function api_other_domains() { send_req(2, encodeURI("http://reverseip.logontube.com/?url=" + api_0.domain + "&output=json"), "json"); }
 
-function api_other_domains() {
-  send_req(2, encodeURI("http://reverseip.logontube.com/?url=" + api_0.domain + "&output=json"), "json");
-}
-
-function api_whois() {
-
-  send_req(3, encodeURI("http://dotnul.com/api/whois/" + api_0.domain), "jsonp");
-  //send_req(3, encodeURI("http://dotnul.com/api/whois/" + api_0.domain + "?callback=cbb"), "jsonp");
-  //send_req(3, encodeURI("http://api.hackertarget.com/whois/?q=" + api_0.domain), "text");
-  //send_req(3, encodeURI("http://api.bulkwhoisapi.com/whoisAPI.php?domain=" + api_0.domain + "&token=usemeforfree"), "json");
-  //send_req(3, encodeURI("https://www.enclout.com/api/v1/whois/show.json?&auth_token=AGasdFCVrvsK43s8soBP&url=" + api_0.domain), "json");
-  //send_req(3, encodeURI("https://www.enclout.com/api/v1/whois/show.json?&auth_token=AGasdFCVrvsK43s8soBP&url=" + api_0.domain), "json");
-  //http://api.screenshotlayer.com/api/capture?access_key=061253fd57ed0de7400ec8951c92f1bb&url=http://google.com&viewport=1440x900&width=250
-}
-
-function change_page(cont) {
-  $(cont).fadeIn();
-}
+function api_whois() { send_req(3, encodeURI("http://dotnul.com/api/whois/" + api_0.domain), "jsonp"); }
 
 
 
@@ -320,7 +293,7 @@ $('#domain').submit(function() {
   api_1.entries = [];
   api_2.domains = [];
   api_3.whois = '';
-  add_to_log('Investigating '+api_0.domain);
+  add_to_log('Researching: '+api_0.domain);
   show_log();
   api_domain_to_ip_country();
   return false;
@@ -331,22 +304,25 @@ $('.divsmall').click(function(){
   if (!ajax_running) $(this).nextAll('.divlarge').first().toggleClass('expand_me');
 });
 
+//Change page logic
+$('a').click(function () {
+  switch ($(this).attr('href')) {
+    case '#om':
+      $('#dtool_about').fadeIn();
+      $('#dtool_container').hide();
+      break;
+    case '#domain':
+      $('#dtool_about').hide();
+      $('#dtool_container').fadeIn();        
+      break;
+  }
+  return false;
+});
+
 //Run this when the DOM is ready
 $(document).ready(function() {
   set_country('Sweden', true);
 });
-
-//api 1 = google maps
-//api 2 = ip-api.com (domain to ip + country)
-//api 3 = cymon.io/api/nexus/v1/ip/ (ip blacklist info)
-//api 4 = reverseip.logontube.com (domains hosted on ip)
-//api 5 = http://dotnul.com/whois-lookup/ (domain whois info)
-
-
-
-
-
-
 
 
 

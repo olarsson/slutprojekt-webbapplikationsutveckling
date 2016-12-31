@@ -3,7 +3,7 @@ html {
   font-size: 1em; }
 
 body {
-  background-color: #e6e6e6;
+  background-color: #e1e1e1;
   color: #000;
   height: 100%;
   line-height: 1.2em;
@@ -23,28 +23,27 @@ pre {
   word-wrap: break-word; }
 
 footer .row {
-  background: blue;
-  border-top: 20px solid #eeeeee; }
+  border-top: 1px solid rgba(191, 191, 191, 0.47);
+  padding-top: 20px; }
 
 h1 {
   font-size: 2em;
-  color: #6f6f6f; }
-
-p {
-  /*font-size: 0.8em */ }
+  color: #000; }
 
 a, a:hover {
-  color: lightblue;
+  color: #0096c7;
   text-decoration: none; }
 
-.nav-item a {
-  color: lightblue;
-  text-decoration: none;
-  /*border-bottom: 1px solid $linkcolor */ }
+a:hover {
+  color: #00c0ff; }
+
+.nav-item .nav-link a {
+  color: #0096c7;
+  text-decoration: none; }
 
 .navbar {
   border-radius: 0;
-  border-bottom: 1px solid #eeeeee; }
+  border-bottom: 1px solid rgba(191, 191, 191, 0.47); }
 
 .navbar-nav .nav-item {
   float: none; }
@@ -53,7 +52,7 @@ a, a:hover {
   float: none; }
 
 #bg_overlay {
-  background: url(/img/world.jpg) no-repeat center center fixed;
+  background: url(../img/world.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -64,7 +63,8 @@ a, a:hover {
   position: fixed;
   top: 0;
   left: 0;
-  opacity: 1; }
+  opacity: 1;
+  z-index: -1; }
 
 #bg_overlay::after {
   position: fixed;
@@ -92,6 +92,9 @@ a, a:hover {
 
 #dtool_container, #dtool_about {
   margin: 100px auto 100px auto; }
+
+#domain p, footer p {
+  font-size: 0.8em; }
 
 #domain_button {
   background-color: #e5e5e5;

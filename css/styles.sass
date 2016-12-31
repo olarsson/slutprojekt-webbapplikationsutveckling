@@ -1,7 +1,7 @@
 $fontsize: 1em
-$bcolor: #e6e6e6
+$bcolor: #e1e1e1
 $fcolor: #000
-$linkcolor: lightblue
+$linkcolor: #0096c7
 $bordercolor: #dadada
 
 html
@@ -29,28 +29,27 @@ pre
   word-wrap: break-word
   
 footer .row
-  background: blue
-  border-top: 20px solid #eeeeee
+  border-top: 1px solid rgba(191, 191, 191, 0.47)
+  padding-top: 20px
   
 h1
   font-size: 2em
-  color: #6f6f6f
-  
-p
-  /*font-size: 0.8em*/
+  color: #000
 
 a, a:hover
   color: $linkcolor
   text-decoration: none
+
+a:hover
+  color: #00c0ff
   
-.nav-item a
+.nav-item .nav-link a
   color: $linkcolor
   text-decoration: none
-  /*border-bottom: 1px solid $linkcolor*/
 
 .navbar
   border-radius: 0
-  border-bottom: 1px solid #eeeeee
+  border-bottom: 1px solid rgba(191, 191, 191, 0.47)
 
 .navbar-nav .nav-item
   float: none
@@ -59,7 +58,7 @@ a, a:hover
   float: none
 
 #bg_overlay
-  background: url(/img/world.jpg) no-repeat center center fixed
+  background: url(../img/world.jpg) no-repeat center center fixed
   -webkit-background-size: cover
   -moz-background-size: cover
   -o-background-size: cover
@@ -71,6 +70,7 @@ a, a:hover
   top: 0
   left: 0
   opacity: 1
+  z-index: -1
   
 #bg_overlay::after
   position: fixed
@@ -98,6 +98,9 @@ a, a:hover
   
 #dtool_container, #dtool_about
   margin: 100px auto 100px auto
+  
+#domain p, footer p
+  font-size: 0.8em
 
 #domain_button
   background-color: #e5e5e5
