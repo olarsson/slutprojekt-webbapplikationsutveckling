@@ -4,6 +4,12 @@
   comment code
   rensa css och linta js-kod
   analyze site with w3
+  
+  features
+  --------
+  show count of blacklist entries found
+  -"- of domains found
+  show more clearly when search is done
 */
 
 var geocoder;
@@ -90,6 +96,7 @@ var api_1 = {
 
 //API for reverseip.logontube.com (get domains hosted on ip)
 var api_2 = {
+  count: 0,
   domains: [],
 
   parse: function(data) {
@@ -99,6 +106,7 @@ var api_2 = {
           break;
         } else { this.domains.push(data.response.domains[i]); }
       }
+      this.count = data.response.domains.length;
       update_html(false, '');
     } else {
       //request failed, throw error
@@ -208,20 +216,21 @@ function update_html(error, data) {
   } else {
 
     all_html = '<div class="col-xs-12">';
-    all_html += (api_1.count == 0 ? `<p>No blacklist entries found.</p>` : `<p>${api_1.count} blacklist entries found for IP ${api_0.ip}</p>`);
+    all_html += (!api_1.count ? `<p>No blacklist entries found.</p>` : `<p>${api_1.count} blacklist entries found for IP ${api_0.ip}</p><p>Showing first 10 entries:</p>`);
     add_to_log('Fetching results..');
 
     for (var i in api_1.entries) {
       all_html += `<div class="row entry_row">`;
-      for (var ii in api_1.entries[i]) all_html += `<div class="col-xs-2 entry_title">${api_1.entries[i][ii].title}</div><div class="col-xs-10">${api_1.entries[i][ii].desc}</div>`;
+      for (var ii in api_1.entries[i]) all_html += `<div class="col-xs-12 col-sm-2 entry_title">${api_1.entries[i][ii].title}</div><div class="col-xs-12 col-sm-10">${api_1.entries[i][ii].desc}</div>`;
       all_html += `</div>`;
     }
     all_html += `</div>`;
+    //$('#ajax_blacklist .divlarge').html('<div class="row"><div class="col-xs-12">' + (api_1.entries.count ? '<p>' + api_1.entries.count + ' blacklist entries found. Showing first 10:</p>' : '') + all_html + '</div></div>');
     $('#ajax_blacklist .divlarge').html('<div class="row">' + all_html + '</div>');
 
     all_html = '';
     for (var i in api_2.domains) all_html += `${api_2.domains[i]}<br>`;
-    $('#ajax_domains .divlarge').html('<div class="row"><div class="col-xs-12">' + all_html + '</div></div>');
+    $('#ajax_domains .divlarge').html('<div class="row"><div class="col-xs-12">' + (api_2.count > 0 ? `<p>${api_2.count} domain(s) found on IP ${api_0.ip}</p>` + (api_2.count > 24 ? '<p>Showing first 25 entries:</p>' : '') + all_html : 'No domains hosted on this IP.') + '</div></div>');
 
     $('#ajax_whois .divlarge').html(`<div class="row"><div class="col-xs-12">${api_3.whois}</div></div>`);    
 
