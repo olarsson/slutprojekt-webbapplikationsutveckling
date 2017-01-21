@@ -7,9 +7,9 @@
   
   features
   --------
-  show count of blacklist entries found
-  -"- of domains found
   show more clearly when search is done
+  disable empty domain search
+  
 */
 
 var geocoder;
@@ -26,6 +26,7 @@ var ajax_running = false; //Boolean that keeps track of if any AJAX requests are
 
 //API for ip-api.com (domain to ip + country)
 var api_0 = {
+  api_desc: 'Domain to IP',
   domain: '',
   ip: '',
   country: '',
@@ -55,6 +56,7 @@ var api_0 = {
 
 //API for cymon.io/api/nexus/v1/ip/ (ip blacklist info)
 var api_1 = {
+  api_desc: 'IP blacklist info',
   count: 0,
   entries: [],
 
@@ -96,6 +98,7 @@ var api_1 = {
 
 //API for reverseip.logontube.com (get domains hosted on ip)
 var api_2 = {
+  api_desc: 'Domains hosted on IP',
   count: 0,
   domains: [],
 
@@ -112,8 +115,6 @@ var api_2 = {
       //request failed, throw error
       update_html(true, 'No data.');
     }
-    //all done, show results and restore visuals
-    //progress(false);    
     api_whois();
   },
 
@@ -126,6 +127,7 @@ var api_2 = {
 
 //API for http://dotnul.com/whois-lookup/ (whois info for the domain)
 var api_3 = {
+  api_desc: 'WHOIS info for domain',
   whois: '',
 
   parse: function(data) {
@@ -138,6 +140,8 @@ var api_3 = {
       update_html(true, 'No data.');
     }
     //all done, show results and restore visuals
+    add_to_log('Success. All done.');
+    show_log();
     progress(false);
   },
 
@@ -249,7 +253,8 @@ function send_req(mode, req_url, req_type) {
 
   var data, html = '';
 
-  add_to_log('Sending request with API ' + (parseInt(mode) + 1) + '..');
+  //add_to_log('Sending request with API ' + (parseInt(mode) + 1) + '..');
+  add_to_log('Sending request with API ' + (parseInt(mode) + 1) + ': ' + window['api_' + mode]["api_desc"] );
 
   $.ajax({
 
@@ -265,8 +270,9 @@ function send_req(mode, req_url, req_type) {
         if (req_type == 'json') data = parse_json(jqXHR.responseText);
         if (req_type == 'jsonp' && mode == 3) data = jqXHR.responseJSON;
         window['api_' + mode]["parse"](data);
+        
       } else {
-        //request failed, timed out, etc..
+        //request failed
         window['api_' + mode]["error_func"](textStatus, mode);
       }
 
@@ -315,17 +321,19 @@ $('.divsmall').click(function(){
 
 //Change page logic
 $('a').click(function () {
+  var found = false;
   switch ($(this).attr('href')) {
     case '#om':
       $('#dtool_about').fadeIn();
       $('#dtool_container').hide();
+      return false;
       break;
     case '#domain':
       $('#dtool_about').hide();
-      $('#dtool_container').fadeIn();        
+      $('#dtool_container').fadeIn();
+      return false;
       break;
   }
-  return false;
 });
 
 //Run this when the DOM is ready
@@ -333,7 +341,9 @@ $(document).ready(function() {
   set_country('Sweden', true);
 });
 
-
-
+//Run this when EVERYTHING is ready
+$(window).bind("load", function () {
+  $("#loading_overlay").fadeOut(1500);
+});
 
 

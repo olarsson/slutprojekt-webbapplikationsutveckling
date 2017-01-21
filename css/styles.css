@@ -15,13 +15,6 @@ img {
   max-height: 100%;
   width: auto; }
 
-pre {
-  white-space: pre-wrap;
-  white-space: -moz-pre-wrap;
-  white-space: -pre-wrap;
-  white-space: -o-pre-wrap;
-  word-wrap: break-word; }
-
 footer .row {
   border-top: 1px solid rgba(191, 191, 191, 0.47);
   padding-top: 20px; }
@@ -77,15 +70,12 @@ a:hover {
 
 .ajax_loading {
   display: none;
-  /*background: rgba(255,255,255,0.85) */
   width: 100%;
   height: 100%; }
 
 .ajax_loading img {
   margin: 0 auto;
-  position: relative;
-  /*top: 50% */
-  /*transform: translateY(-50%) */ }
+  position: relative; }
 
 #dtool_about {
   display: none; }
@@ -118,16 +108,13 @@ a:hover {
   margin-bottom: 30px; }
 
 .winsmall {
-  /*border: 1px solid #d0d0d0 */
   font-size: 0.8em;
   -webkit-box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.1);
-  box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.1);
-  /*border-radius: 4px */ }
+  box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.1); }
 
 .divsmall {
   background: rgba(255, 255, 255, 0.41);
-  /*color: rgba(35, 100, 140, 1) */
   color: #6f6f6f;
   text-transform: uppercase;
   font-size: 0.9em;
@@ -138,13 +125,8 @@ a:hover {
 .divlarge {
   font-size: 0.75rem;
   line-height: 1.4rem;
-  /*background-color: #f7f7f7 */
-  /*background-color: rgba(255, 255, 255, 0.8) */
-  /*background-color: rgb(127, 190, 226) */
-  /*background-color: rgba(255, 255, 255, 0.14) */
   background-color: rgba(255, 255, 255, 0.13);
   opacity: 0;
-  /*color: #333 */
   color: #6f6f6f;
   overflow: hidden;
   max-height: 0px;
@@ -161,13 +143,10 @@ a:hover {
   -moz-transition: opacity 0.5s linear, max-height 0.5s linear;
   transition: opacity 0.5s linear, max-height 0.5s linear; }
 
-/** google maps */
 #map {
   height: 400px;
   width: 100%; }
 
-/**************** */
-/************************* */
 .date {
   font-size: 0.8em;
   display: block;
@@ -206,7 +185,6 @@ a:hover {
   display: block;
   background: yellow; }
 
-/************************* */
 .entry_title {
   text-transform: uppercase;
   font-weight: bold;
@@ -214,5 +192,45 @@ a:hover {
 
 .entry_row {
   margin-bottom: 30px; }
+
+/*#bg_overlay::after
+ * -webkit-animation: bgcolorc 60s alternate infinite
+ * -moz-animation:    bgcolorc 60s alternate infinite
+ * -o-animation:      bgcolorc 60s alternate infinite
+ * animation:         bgcolorc 60s alternate infinite */
+/*@keyframes bgcolorc
+ * 0%
+ *   background: rgba(249, 199, 199, 0.65)
+ * 17%
+ *   background: rgba(249, 199, 249, 0.65)
+ * 34%
+ *   background: rgba(199, 199, 249, 0.65)
+ * 51%
+ *   background: rgba(199, 249, 199, 0.65)
+ * 68%
+ *   background: rgba(199, 249, 249, 0.65)
+ * 85%
+ *   background: rgba(249, 249, 249, 0.65)
+ * 100%
+ *   background: rgba(249, 199, 249, 0.65) */
+#loading_overlay {
+  display: table;
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background-color: #e1e1e1; }
+
+#loading_overlay::after {
+  vertical-align: middle;
+  display: table-cell;
+  height: 100%;
+  width: auto;
+  margin: 0 auto;
+  content: "";
+  background: url(../img/gears.svg) no-repeat center center fixed; }
 
 /*# sourceMappingURL=styles.css.map */
