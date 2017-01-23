@@ -12,6 +12,7 @@ http://www.olof.it/webbapplikationsutveckling/
 Teknologier
 ---------------------------------------------------
  - HTML5 för markup och CSS för styling
+ - SASS för CSS
  - Bootstrap 4 för menyn och delar av layouten
  - Google Fonts för fonts
  - JavaScript och jQuery (ES6)
@@ -42,9 +43,9 @@ Arbetsprocess
 ---------------------------------------------------
 Min process bestod av att jag började med att gå igenom olika listor med API:er för att lista ut vilka som verkade passa bra ihop och ge relevant information.
 
-Sedan byggde jag JavaScript-delen med AJAX först av allt för att göra det så enkelt som möjligt utveckla det.
+Sedan byggde jag JavaScript-delen med AJAX först av allt för att göra det så enkelt som möjligt att utveckla det.
 
-Efter det designade jag ett UI som jag tyckte var tilltalande och anpassade sidan efter det.
+Efter det designade jag ett UI som jag tyckte var tilltalande och anpassade CSS och HTML efter det.
 
 Mot slutet av projektet testade jag sidan för cross-browser funktionalitet och i olika upplösningar och enheter (i den mån jag hade tilgång). Jag gjorde inte detta under processen då designen av sidan var en relativt liten del i projektet som inte tog så mycket tid och var rätt enkel att ordna i efterhand.
 
