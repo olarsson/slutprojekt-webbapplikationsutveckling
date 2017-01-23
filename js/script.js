@@ -1,20 +1,5 @@
 "use strict";
 
-<<<<<<< HEAD
-=======
-/*
-  comment code
-  rensa css och linta js-kod
-  analyze site with w3
-  
-  features
-  --------
-  show more clearly when search is done
-  disable empty domain search
-  
-*/
-
->>>>>>> 0457cfc96d1b9037ccf8d6f864b305961ce5e239
 var geocoder;
 var map;
 var markers = []; //Remembers the marker info for Google Maps API
