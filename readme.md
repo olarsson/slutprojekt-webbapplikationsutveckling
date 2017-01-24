@@ -26,10 +26,15 @@ Teknologier
 API
 ---------------------------------------------------
  - Google Maps: https://developers.google.com/maps/
+   Googles API för att interagera med Google Maps.
  - IP Geolocation: http://ip-api.com/docs/
+   API för att hämta geografisk information om en IP-address.
  - IP Blacklist Info: http://docs.cymon.io/
+   API för att se om en IP-address har blivit svartlistad på någon av alla blacklists som finns tillgängliga.
  - Reverse IP: http://reverseip.logontube.com/
+   API för att se vilka domäner som är kopplad till en IP-address.
  - WHOIS domain info: http://dotnul.com/whois-lookup/
+   API för att hämta WHOIS info för en domän, dvs information om vem som äger en viss domän.
 
 Skapat av
 ---------------------------------------------------

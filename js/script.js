@@ -1,7 +1,12 @@
+/* 
+   Written by Olof Larsson, 2017
+   https://github.com/olarsson/slutprojekt-webbapplikationsutveckling
+*/
+
 "use strict";
 
-var geocoder;
-var map;
+var geocoder; //Google Maps API variable for converting an address to a location on Google Maps
+var map; //Variable to hold the Google Maps element
 var markers = []; //Remembers the marker info for Google Maps API
 
 var log = []; //Entries for the log are stored here
@@ -217,7 +222,6 @@ function update_html(error, data) {
       all_html += `</div>`;
     }
     all_html += `</div>`;
-    //$('#ajax_blacklist .divlarge').html('<div class="row"><div class="col-xs-12">' + (api_1.entries.count ? '<p>' + api_1.entries.count + ' blacklist entries found. Showing first 10:</p>' : '') + all_html + '</div></div>');
     $('#ajax_blacklist .divlarge').html('<div class="row">' + all_html + '</div>');
 
     all_html = '';
@@ -241,7 +245,6 @@ function send_req(mode, req_url, req_type) {
 
   var data, html = '';
 
-  //add_to_log('Sending request with API ' + (parseInt(mode) + 1) + '..');
   add_to_log('Sending request with API ' + (parseInt(mode) + 1) + ': ' + window['api_' + mode]["api_desc"] );
 
   $.ajax({
@@ -307,7 +310,7 @@ $('.divsmall').click(function(){
   if (!ajax_running) $(this).nextAll('.divlarge').first().toggleClass('expand_me');
 });
 
-//Change page logic
+//Change page logic for #hashtag click events
 $('a').click(function () {
   var found = false;
   switch ($(this).attr('href')) {
